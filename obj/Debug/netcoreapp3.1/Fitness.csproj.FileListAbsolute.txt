@@ -1,0 +1,5 @@
+D:\Programozas\.NET\Projekt\Fitness\obj\Debug\netcoreapp3.1\Fitness.csprojAssemblyReference.cache
+D:\Programozas\.NET\Projekt\Fitness\obj\Debug\netcoreapp3.1\MainWindow.g.cs
+D:\Programozas\.NET\Projekt\Fitness\obj\Debug\netcoreapp3.1\App.g.cs
+D:\Programozas\.NET\Projekt\Fitness\obj\Debug\netcoreapp3.1\Fitness_MarkupCompile.cache
+D:\Programozas\.NET\Projekt\Fitness\obj\Debug\netcoreapp3.1\Fitness_MarkupCompile.lref
