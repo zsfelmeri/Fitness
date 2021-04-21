@@ -9,6 +9,11 @@
     public bool isUser = false;
     //public bool IsLoggedIn = false;
 
+    protected override async Task OnInitializedAsync()
+    {
+        var firebase = new FireBase();
+    }
+
     void ClickAdmin()
     {
         isAdmin = true;
