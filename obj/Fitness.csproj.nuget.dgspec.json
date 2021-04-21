@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Programozas\\.NET\\Labor\\Fitness\\Fitness.csproj": {}
+    "D:\\Programozas\\.NET\\Projekt\\Fitness\\Fitness.csproj": {}
   },
   "projects": {
-    "D:\\Programozas\\.NET\\Labor\\Fitness\\Fitness.csproj": {
+    "D:\\Programozas\\.NET\\Projekt\\Fitness\\Fitness.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Programozas\\.NET\\Labor\\Fitness\\Fitness.csproj",
+        "projectUniqueName": "D:\\Programozas\\.NET\\Projekt\\Fitness\\Fitness.csproj",
         "projectName": "Fitness",
-        "projectPath": "D:\\Programozas\\.NET\\Labor\\Fitness\\Fitness.csproj",
+        "projectPath": "D:\\Programozas\\.NET\\Projekt\\Fitness\\Fitness.csproj",
         "packagesPath": "C:\\Users\\codeZ\\.nuget\\packages\\",
-        "outputPath": "D:\\Programozas\\.NET\\Labor\\Fitness\\obj\\",
+        "outputPath": "D:\\Programozas\\.NET\\Projekt\\Fitness\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\",
