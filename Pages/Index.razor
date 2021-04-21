@@ -1,7 +1,23 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+<button @onclick="ClickAdmin">Admin</button>
+<button @onclick="ClickUser">User</button>
 
-Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+    public bool isAdmin = false;
+    public bool isUser = false;
+    //public bool IsLoggedIn = false;
+
+    void ClickAdmin()
+    {
+        isAdmin = true;
+        isUser = false;
+    }
+
+    void ClickUser()
+    {
+        isUser = true;
+        isAdmin = false;
+    }
+}
