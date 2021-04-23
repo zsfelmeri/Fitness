@@ -1,28 +1,51 @@
 ﻿@page "/"
+@inject Blazored.LocalStorage.ILocalStorageService LocalStore
 
-<button @onclick="ClickAdmin">Admin</button>
-<button @onclick="ClickUser">User</button>
+@if (isAdmin || isUser)
+{
+    <button @onclick="@ClearSession" class="btn btn-primary">Logout</button>
+}
+else
+{
+    <button @onclick="@ClickAdmin" class="btn btn-primary">Admin</button>
+    <button @onclick="@ClickUser" class="btn btn-primary">User</button>
+}
 
 
 @code {
-    public bool isAdmin = false;
-    public bool isUser = false;
-    //public bool IsLoggedIn = false;
+    public bool isAdmin { get; set; }
+    public bool isUser { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         var firebase = new FireBase();
+        isAdmin = await LocalStore.GetItemAsync<bool>("SessionAdmin");
+        isUser = await LocalStore.GetItemAsync<bool>("SessionUser");
     }
-
-    void ClickAdmin()
+    private void ClickAdmin()
     {
         isAdmin = true;
         isUser = false;
+        SaveSession();
     }
 
-    void ClickUser()
+    private void ClickUser()
     {
         isUser = true;
         isAdmin = false;
+        SaveSession();
+    }
+
+    public async void SaveSession()
+    {
+        await LocalStore.SetItemAsync("SessionAdmin", isAdmin);
+        await LocalStore.SetItemAsync("SessionUser", isUser);
+    }
+
+    public async void ClearSession()
+    {
+        isAdmin = false;
+        isUser = false;
+        await LocalStore.ClearAsync();
     }
 }

@@ -1,0 +1,37 @@
+﻿@page "/tickettypes"
+@inject Blazored.LocalStorage.ILocalStorageService LocalStore
+
+<h3>TicketTypes</h3>
+
+@if (isAdmin || isUser)
+{
+    <button @onclick="CreateTicketClick" class="btn btn-primary">Create</button>
+    <button @onclick="EditTicketClick" class="btn btn-primary">Edit</button>
+    <button @onclick="DeleteTicketClick" class="btn btn-primary">Delete</button>
+}
+
+@code {
+    public bool isAdmin { get; set; }
+    public bool isUser { get; set; }
+
+    private void CreateTicketClick()
+    {
+
+    }
+
+    private void EditTicketClick()
+    {
+
+    }
+
+    private void DeleteTicketClick()
+    {
+        
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        isAdmin = await LocalStore.GetItemAsync<bool>("SessionAdmin");
+        isUser = await LocalStore.GetItemAsync<bool>("SessionUser");
+    }
+}
