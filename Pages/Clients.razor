@@ -1,0 +1,58 @@
+﻿@page "/clients"
+@inject Blazored.LocalStorage.ILocalStorageService LocalStore
+
+<h3>Clients</h3>
+
+
+@if (isAdmin)
+{
+    <button @onclick="@GetAllClients" class="btn btn-primary">Get all clients</button>
+
+    <div class="">
+        <button @onclick="@EditClient" class="btn btn-primary">Edit</button>
+        <button @onclick="@DeleteClient" class="btn btn-primary">Delete</button>
+    </div>
+
+    <div>
+        <button @onclick="@AddClient" class="btn btn-primary">Add</button>
+    </div>
+}
+else if (isUser)
+{
+    <button @onclick="@GetAllClients" class="btn btn-primary">Get all clients</button>
+
+    <div>
+        <button @onclick="@AddClient" class="btn btn-primary">Add</button>
+    </div>
+}
+
+@code {
+    public bool isAdmin { set; get; }
+    public bool isUser { set; get; }
+
+    private void GetAllClients()
+    {
+
+    }
+
+    private void AddClient()
+    {
+
+    }
+
+    private void EditClient()
+    {
+
+    }
+
+    private void DeleteClient()
+    {
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        isAdmin = await LocalStore.GetItemAsync<bool>("SessionAdmin");
+        isUser = await LocalStore.GetItemAsync<bool>("SessionUser");
+    }
+}

@@ -1,0 +1,30 @@
+﻿@page "/entries"
+@inject Blazored.LocalStorage.ILocalStorageService LocalStore
+
+<h3>Entries</h3>
+
+@if (isAdmin || isUser)
+{
+    <div>
+        <label>Name or Barcode: </label>
+        <input type="text" @bind="inputString" />
+        <button @onclick="SearchClient"></button>
+    </div>
+}
+
+@code {
+    public bool isAdmin { set; get; }
+    public bool isUser { set; get; }
+    public string inputString { set; get; } = string.Empty;
+
+    private void SearchClient()
+    {
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        isAdmin = await LocalStore.GetItemAsync<bool>("SessionAdmin");
+        isUser = await LocalStore.GetItemAsync<bool>("SessionUser");
+    }
+}
