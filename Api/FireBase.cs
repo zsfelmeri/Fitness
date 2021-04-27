@@ -33,7 +33,10 @@ namespace Fitness.Api
             }
            
         }
-
-       
+        
+       public async void Get(string data)
+        {
+            FirebaseResponse response = await client.GetTaskAsync(data);
+        }
     }
 }
