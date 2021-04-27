@@ -9,8 +9,6 @@ else
 {
     <button @onclick="@ClickAdmin" class="btn btn-primary">Admin</button>
     <button @onclick="@ClickUser" class="btn btn-primary">User</button>
-
-    <button @onclick="@GetData" class="btn btn-primary">Get</button>
 }
 
 
@@ -24,11 +22,6 @@ else
         firebase = new FireBase();
         isAdmin = await LocalStore.GetItemAsync<bool>("SessionAdmin");
         isUser = await LocalStore.GetItemAsync<bool>("SessionUser");
-    }
-
-    private void GetData()
-    {
-        firebase.Get("SeasonTicketTypes");
     }
 
     private void ClickAdmin()

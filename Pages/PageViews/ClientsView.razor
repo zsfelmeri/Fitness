@@ -1,0 +1,25 @@
+﻿<tr>
+    <td>@ClientId.clientId.name</td>
+    <td>@ClientId.clientId.email</td>
+    <td>@ClientId.clientId.address</td>
+    <td>@ClientId.clientId.personalIdentity</td>
+    <td>@ClientId.clientId.telefon</td>
+    <td>@ClientId.clientId.barCode</td>
+    <td><button @onclick="EditClient" class="btn btn-primary">Edit</button></td>
+    <td><button @onclick="DeleteClient" class="btn btn-primary">Delete</button></td>
+</tr>
+
+@code {
+    [Parameter]
+    public Client ClientId { set; get; }
+
+    private void EditClient()
+    {
+
+    }
+
+    private void DeleteClient()
+    {
+
+    }
+}

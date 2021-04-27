@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FireSharp.Config;
 using FireSharp.Interfaces;
 using FireSharp.Response;
+using Fitness.Data;
 
 namespace Fitness.Api
 {
@@ -34,9 +35,16 @@ namespace Fitness.Api
            
         }
         
-       public async void Get(string data)
+        public async Task<List<Client>> GetClients(string table)
         {
-            FirebaseResponse response = await client.GetTaskAsync(data);
+            FirebaseResponse response = await client.GetTaskAsync(table);
+            return response.ResultAs<List<Client>>();
+        }
+
+        public async Task<Clientid> GetClientById(string id)
+        {
+            FirebaseResponse response = await client.GetTaskAsync($"Clients/{id}");
+            return response.ResultAs<Clientid>();
         }
     }
 }
