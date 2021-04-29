@@ -56,7 +56,8 @@
             FireBase firebase = new FireBase();
 
             client.comments = comment.Split("\n");
-
             firebase.InsertClient(client);
+
+            isAdded = true;
         }
     }

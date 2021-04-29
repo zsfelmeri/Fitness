@@ -43,7 +43,7 @@ namespace Fitness.Api
             dict = JsonConvert.DeserializeObject<Dictionary<string, ClientNeeded>>(response.Body);
 
             List<Client> cls = new List<Client>();
-            if (dict.Count != 0)
+            if (dict != null && dict.Count != 0)
             {
                 foreach (var c in dict)
                 {
