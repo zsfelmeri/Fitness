@@ -5,12 +5,15 @@ using System.Threading.Tasks;
 
 namespace Fitness.Data
 {
+
     public class Gym
     {
-        public Gymid gymId { get; set; }
+        public string id { get; set; }
+        public int isDeleted { get; set; }
+        public string name { get; set; }
     }
 
-    public class Gymid
+    public class GymNeeded
     {
         public int isDeleted { get; set; }
         public string name { get; set; }

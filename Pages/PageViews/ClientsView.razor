@@ -1,6 +1,14 @@
 ﻿@inject NavigationManager NavigationManager
 
 <tr>
+    @if (client.isDeleted == 1)
+    {
+        <td>Yes</td>
+    }
+    else
+    {
+        <td>No</td>
+    }
     <td>@client.name</td>
     <td>@client.email</td>
     <td>@client.address</td>

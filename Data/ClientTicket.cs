@@ -5,12 +5,22 @@ using System.Threading.Tasks;
 
 namespace Fitness.Data
 {
+
     public class ClientTicket
     {
-        public Clientticketid clientTicketId { get; set; }
+        public string id { get; set; }
+        public string barCode { get; set; }
+        public string clientId { get; set; }
+        public string firstUsageDate { get; set; }
+        public string gymId { get; set; }
+        public int numberOfPreviouslyAccess { get; set; }
+        public string purchaseDate { get; set; }
+        public double sellingPrice { get; set; }
+        public string ticketId { get; set; }
+        public int valid { get; set; }
     }
 
-    public class Clientticketid
+    public class ClientTicketNeeded
     {
         public string barCode { get; set; }
         public string clientId { get; set; }
@@ -18,7 +28,7 @@ namespace Fitness.Data
         public string gymId { get; set; }
         public int numberOfPreviouslyAccess { get; set; }
         public string purchaseDate { get; set; }
-        public int sellingPrice { get; set; }
+        public double sellingPrice { get; set; }
         public string ticketId { get; set; }
         public int valid { get; set; }
     }

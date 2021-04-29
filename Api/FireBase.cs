@@ -96,7 +96,7 @@ namespace Fitness.Api
             await client.UpdateTaskAsync($"Clients/{c.id}", clientNeeded);
         }
 
-        public async void InsertClient(Client c)
+        public async void InsertClient(Client c, ClientTicket ticket, bool isChecked)
         {
             ClientNeeded cn = new ClientNeeded
             {
@@ -112,12 +112,79 @@ namespace Fitness.Api
                 telefon = c.telefon
             };
 
-            await client.PushTaskAsync($"Clients", cn);
+            await client.PushTaskAsync("Clients", cn);
+
+            if (isChecked)
+            {
+                ClientTicketNeeded tck = new ClientTicketNeeded
+                {
+                    barCode = ticket.barCode,
+                    clientId = c.id,
+                    firstUsageDate = ticket.firstUsageDate,
+                    gymId = ticket.gymId,
+                    numberOfPreviouslyAccess = ticket.numberOfPreviouslyAccess,
+                    purchaseDate = ticket.purchaseDate,
+                    sellingPrice = ticket.sellingPrice,
+                    ticketId = ticket.ticketId,
+                    valid = ticket.valid
+                };
+
+                await client.PushTaskAsync("ClientTickets", tck);
+            }
         }
 
         public async void DeleteClient(string id)
         {
             await client.DeleteTaskAsync($"Clients/{id}");
+        }
+
+        public async Task<List<Client>> SearchClient(string criteria)
+        {
+            List<Client> cls = new List<Client>();
+            cls = await GetClients();
+
+            List<Client> obj = new List<Client>();
+
+            if (cls != null && cls.Count != 0)
+            {
+                foreach (var c in cls)
+                {
+                    if(c.name.ToLower().Contains(criteria.ToLower()))
+                    {
+                        obj.Add(c);
+                    }
+                }
+            }
+
+            return obj;
+        }
+
+        public async Task<List<Employee>> SearchEmployee(string criteria)
+        {
+            FirebaseResponse response = await client.GetTaskAsync("Employees");
+            Dictionary<string, EmployeeNeeded> emp = new Dictionary<string, EmployeeNeeded>();
+            emp = JsonConvert.DeserializeObject<Dictionary<string, EmployeeNeeded>>(response.Body);
+
+            List<Employee> empList = new List<Employee>();
+            if(emp != null && emp.Count != 0)
+            {
+                foreach(var e in emp)
+                {
+                    if (e.Value.name.ToLower().Contains(criteria.ToLower()))
+                    {
+                        empList.Add(new Employee
+                        {
+                            id = e.Key,
+                            name = e.Value.name,
+                            address = e.Value.address,
+                            personalIdentity = e.Value.personalIdentity,
+                            mobile = e.Value.mobile
+                        });
+                    }
+                }
+            }
+
+            return empList;
         }
     }
 }
