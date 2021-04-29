@@ -1,0 +1,62 @@
+﻿@page "/clients/add"
+
+    <div>
+        <label>Name: </label>
+        <input type="text" @bind="@client.name" />
+        <br />
+
+        <label>Address: </label>
+        <input type="text" @bind="@client.address" />
+        <br />
+
+        <label>Email: </label>
+        <input type="text" @bind="@client.email" />
+        <br />
+
+        <label>Mobile: </label>
+        <input type="text" @bind="@client.telefon" />
+        <br />
+
+        <label>Barcode: </label>
+        <input type="text" @bind="@client.barCode" />
+        <br />
+
+        <label>Date: </label>
+        <input type="text" @bind="@client.insertedDate" />
+        <br />
+
+        <label>Personal Identity: </label>
+        <input type="text" @bind="@client.personalIdentity" />
+        <br />
+
+        <label>Photo: </label>
+        <input type="text" @bind="@client.photo" />
+        <br />
+
+        <label>Comments: </label>
+        <textarea @bind="comment"></textarea><br />
+
+        <button class="btn btn-primary" @onclick="AddClient">Add</button>
+        <br />
+
+        @if (isAdded)
+        {
+            <h3>Client has been added.</h3>
+            isAdded = false;
+        }
+    </div>
+
+    @code {
+        public Client client { get; set; } = new Client();
+        bool isAdded = false;
+        public string comment = string.Empty;
+
+        private void AddClient()
+        {
+            FireBase firebase = new FireBase();
+
+            client.comments = comment.Split("\n");
+
+            firebase.InsertClient(client);
+        }
+    }

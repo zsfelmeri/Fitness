@@ -8,15 +8,7 @@
 {
     <button @onclick="@GetAllClients" class="btn btn-primary">Get all clients</button>
 
-    <div>
-        <button @onclick="@AddClient" class="btn btn-primary">Add</button>
-    </div>
-}
-else if (isUser)
-{
-    <button @onclick="@GetAllClients" class="btn btn-primary">Get all clients</button>
-
-    if(clients?.Count() != 0)
+    if (clients?.Count() != 0)
     {
         <div class="table-bordered">
             <table>
@@ -31,14 +23,43 @@ else if (isUser)
 
                 @foreach (Client client in clients)
                 {
-                    <ClientsView ClientId="@client" />
+                    <ClientsView client="@client" />
                 }
             </table>
         </div>
     }
 
     <div>
-        <button @onclick="@AddClient" class="btn btn-primary">Add</button>
+        <a class="btn btn-primary" href="/clients/add">Add Client</a>
+    </div>
+}
+else if (isUser)
+{
+    <button @onclick="@GetAllClients" class="btn btn-primary">Get all clients</button>
+
+    if (clients?.Count() != 0)
+    {
+        <div class="table-bordered">
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                    <th>Personal Identity</th>
+                    <th>Mobile</th>
+                    <th>Barcode</th>
+                </tr>
+
+                @foreach (Client client in clients)
+                {
+                    <ClientsView client="@client" />
+                }
+            </table>
+        </div>
+    }
+
+    <div>
+        <a class="btn btn-primary" href="clients/add">Add Client</a>
     </div>
 }
 
@@ -48,14 +69,9 @@ else if (isUser)
     public FireBase firebase { get; set; }
     public List<Client> clients { get; set; } = new List<Client>();
 
-    private async void GetAllClients()
+    private async Task GetAllClients()
     {
-        clients = await firebase.GetClients("Clients");
-    }
-
-    private void AddClient()
-    {
-
+        clients = await firebase.GetClients();
     }
 
     protected override async Task OnInitializedAsync()
