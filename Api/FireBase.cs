@@ -109,6 +109,15 @@ namespace Fitness.Api
             return c;
         }
 
+        public async Task<Ticket> GetTicketById(string id)
+        {
+            FirebaseResponse response = await client.GetTaskAsync($"SeasonTicketTypes/{id}");
+            Ticket ticket = JsonConvert.DeserializeObject<Ticket>(response.Body);
+            ticket.id = id;
+
+            return ticket;
+        }
+
         public async void UpdateClient(Client c)
         {
             ClientNeeded clientNeeded = new ClientNeeded
@@ -126,6 +135,24 @@ namespace Fitness.Api
             };
 
             await client.UpdateTaskAsync($"Clients/{c.id}", clientNeeded);
+        }
+
+        public async void UpdateTicket(Ticket ticket)
+        {
+            TicketNeeded ticketNeeded = new TicketNeeded
+            {
+                denomination = ticket.denomination,
+                gymId= ticket.gymId,
+                deleted = ticket.deleted,
+                fromHour = ticket.fromHour,
+                numberOfValidDays = ticket.numberOfValidDays,
+                numberOfValidEntry = ticket.numberOfValidEntry,
+                price = ticket.price,
+                toHour = ticket.toHour,
+                usageForDay = ticket.usageForDay,
+            };
+
+            await client.UpdateTaskAsync($"SeasonTicketTypes/{ticket.id}", ticketNeeded);
         }
 
         public async void InsertClient(Client c, ClientTicket ticket, bool isChecked)
@@ -165,6 +192,25 @@ namespace Fitness.Api
             }
         }
 
+        public async void InsertTicket(Ticket ticket )
+        {
+            TicketNeeded ticketNeeded = new TicketNeeded
+            {
+                denomination = ticket.denomination,
+                gymId = ticket.gymId,
+                deleted = ticket.deleted,
+                fromHour = ticket.fromHour,
+                numberOfValidDays = ticket.numberOfValidDays,
+                numberOfValidEntry = ticket.numberOfValidEntry,
+                price = ticket.price,
+                toHour = ticket.toHour,
+                usageForDay = ticket.usageForDay,
+            };
+
+            await client.PushTaskAsync($"SeasonTicketTypes", ticketNeeded);
+
+        }
+
         public async void DeleteClient(string id)
         {
             await client.DeleteTaskAsync($"Clients/{id}");
@@ -172,7 +218,7 @@ namespace Fitness.Api
 
         public async void DeleteTicket(string id)
         {
-           // await client.DeleteTaskAsync($"SeasonTicketTypes/{id}");
+            await client.DeleteTaskAsync($"SeasonTicketTypes/{id}");
         }
 
         public async Task<List<Client>> SearchClient(string criteria)

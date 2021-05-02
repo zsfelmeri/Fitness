@@ -30,12 +30,9 @@
 
 @if (isAdmin)
 {
-
-
-
-    <button @onclick="CreateTicketClick" class="btn btn-primary">Create</button>
-    <button @onclick="EditTicketClick" class="btn btn-primary">Edit</button>
-    <button @onclick="DeleteTicketClick" class="btn btn-primary">Delete</button>
+    <div>
+        <a class="btn btn-primary" href="tickets/add">Add New Ticket</a>
+    </div>
 }
 
 @code {
@@ -56,15 +53,6 @@
 
     }
 
-    private void EditTicketClick()
-    {
-
-    }
-
-    private void DeleteTicketClick()
-    {
-
-    }
 
     protected override async Task OnInitializedAsync()
     {
