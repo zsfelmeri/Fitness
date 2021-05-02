@@ -35,6 +35,38 @@ namespace Fitness.Api
             }
            
         }
+
+        public async Task<List<Ticket>> GetAllTicket()
+        {
+            FirebaseResponse response = await client.GetTaskAsync("SeasonTicketTypes");
+            Dictionary<string, TicketNeeded> dict = new Dictionary<string, TicketNeeded>();
+            dict = JsonConvert.DeserializeObject<Dictionary<string, TicketNeeded>>(response.Body);
+
+            List<Ticket> tickets = new List<Ticket>();
+            if(dict != null && dict.Count !=0)
+            {
+                foreach(var elem in dict)
+                {
+                    Ticket ticket = new Ticket
+                    {
+                        id = elem.Key,
+                        deleted = elem.Value.deleted,
+                        denomination = elem.Value.denomination,
+                        fromHour = elem.Value.fromHour,
+                        gymId = elem.Value.gymId,
+                        numberOfValidDays = elem.Value.numberOfValidDays,
+                        numberOfValidEntry = elem.Value.numberOfValidEntry,
+                        price = elem.Value.price,
+                        toHour = elem.Value.toHour,
+                        usageForDay = elem.Value.usageForDay
+                    };
+                    tickets.Add(ticket);
+                }
+            }
+            return tickets;
+
+        }
+
         
         public async Task<List<Client>> GetClients()
         {
@@ -77,6 +109,15 @@ namespace Fitness.Api
             return c;
         }
 
+        public async Task<Ticket> GetTicketById(string id)
+        {
+            FirebaseResponse response = await client.GetTaskAsync($"SeasonTicketTypes/{id}");
+            Ticket ticket = JsonConvert.DeserializeObject<Ticket>(response.Body);
+            ticket.id = id;
+
+            return ticket;
+        }
+
         public async void UpdateClient(Client c)
         {
             ClientNeeded clientNeeded = new ClientNeeded
@@ -94,6 +135,24 @@ namespace Fitness.Api
             };
 
             await client.UpdateTaskAsync($"Clients/{c.id}", clientNeeded);
+        }
+
+        public async void UpdateTicket(Ticket ticket)
+        {
+            TicketNeeded ticketNeeded = new TicketNeeded
+            {
+                denomination = ticket.denomination,
+                gymId= ticket.gymId,
+                deleted = ticket.deleted,
+                fromHour = ticket.fromHour,
+                numberOfValidDays = ticket.numberOfValidDays,
+                numberOfValidEntry = ticket.numberOfValidEntry,
+                price = ticket.price,
+                toHour = ticket.toHour,
+                usageForDay = ticket.usageForDay,
+            };
+
+            await client.UpdateTaskAsync($"SeasonTicketTypes/{ticket.id}", ticketNeeded);
         }
 
         public async void InsertClient(Client c, ClientTicket ticket, bool isChecked)
@@ -133,9 +192,33 @@ namespace Fitness.Api
             }
         }
 
+        public async void InsertTicket(Ticket ticket )
+        {
+            TicketNeeded ticketNeeded = new TicketNeeded
+            {
+                denomination = ticket.denomination,
+                gymId = ticket.gymId,
+                deleted = ticket.deleted,
+                fromHour = ticket.fromHour,
+                numberOfValidDays = ticket.numberOfValidDays,
+                numberOfValidEntry = ticket.numberOfValidEntry,
+                price = ticket.price,
+                toHour = ticket.toHour,
+                usageForDay = ticket.usageForDay,
+            };
+
+            await client.PushTaskAsync($"SeasonTicketTypes", ticketNeeded);
+
+        }
+
         public async void DeleteClient(string id)
         {
             await client.DeleteTaskAsync($"Clients/{id}");
+        }
+
+        public async void DeleteTicket(string id)
+        {
+            await client.DeleteTaskAsync($"SeasonTicketTypes/{id}");
         }
 
         public async Task<List<Client>> SearchClient(string criteria)
