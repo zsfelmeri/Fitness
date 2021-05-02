@@ -3,8 +3,36 @@
 
 <h3>TicketTypes</h3>
 
-@if (isAdmin || isUser)
+@if (tickets?.Count() != 0)
 {
+    <div class="table-bordered">
+        <table>
+            <tr>
+                <th>Denomination</th>
+                <th>Price</th>
+                <th>Number Of Valid Days</th>
+                <th>Number Of Valid Entry</th>
+                <th>Deleted</th>
+                <th>Gym</th>
+                <th>From Hour </th>
+                <th>To Hour</th>
+                <th>Usage For Day</th>
+            </tr>
+
+            @foreach (Ticket ticket in tickets)
+            {
+                <TicketViews ticket="@ticket" />
+            }
+        </table>
+    </div>
+}
+
+
+@if (isAdmin)
+{
+
+
+
     <button @onclick="CreateTicketClick" class="btn btn-primary">Create</button>
     <button @onclick="EditTicketClick" class="btn btn-primary">Edit</button>
     <button @onclick="DeleteTicketClick" class="btn btn-primary">Delete</button>
@@ -13,6 +41,15 @@
 @code {
     public bool isAdmin { get; set; }
     public bool isUser { get; set; }
+    public FireBase firebase { get; set; }
+
+    public List<Ticket> tickets { get; set; } = new List<Ticket>();
+
+    private async Task GetAllTickets()
+    {
+        tickets = await firebase.GetAllTicket();
+    }
+
 
     private void CreateTicketClick()
     {
@@ -26,12 +63,16 @@
 
     private void DeleteTicketClick()
     {
-        
+
     }
 
     protected override async Task OnInitializedAsync()
     {
+        firebase = new FireBase();
         isAdmin = await LocalStore.GetItemAsync<bool>("SessionAdmin");
         isUser = await LocalStore.GetItemAsync<bool>("SessionUser");
+        await GetAllTickets();
+
+
     }
 }
