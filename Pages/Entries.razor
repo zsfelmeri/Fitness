@@ -16,14 +16,19 @@
     public bool isAdmin { set; get; }
     public bool isUser { set; get; }
     public string inputString { set; get; } = string.Empty;
+    private List<Client> clients { get; set; } = new List<Client>();
+    private FireBase FireBase { get; set; } = new FireBase();
 
     private void SearchClient()
     {
 
     }
 
+
+
     protected override async Task OnInitializedAsync()
     {
+
         isAdmin = await LocalStore.GetItemAsync<bool>("SessionAdmin");
         isUser = await LocalStore.GetItemAsync<bool>("SessionUser");
     }
