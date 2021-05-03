@@ -39,17 +39,20 @@
     @if (ticketCheck)
     {
         <h3>Ticket info:</h3>
-        <label>Barcode: </label>
-        <input type="text" @bind="@ticket.barCode" />
-        <br />
-
-        <label>Date: </label>
-        <input type="datetime" @bind="@ticket.purchaseDate" />
-        <br />
-
-        <label>Selling price: </label>
-        <input type="number" @bind="@ticket.sellingPrice" />
-        <br />
+        <label>Ticket types: </label>
+        @if (tickets.Count() == 0)
+        {
+            <h3>There is no ticket yet.</h3> <br/>
+        }
+        else
+        {
+            <select @onchange="OnChangeEvent">
+                @foreach (var t in tickets)
+                {
+                    <option value="@t.id">@t.denomination</option>
+                }
+            </select><br />
+        }
     }
 
     <button class="btn btn-primary" @onclick="AddClient">Add</button>
@@ -69,7 +72,20 @@
 
         public string comment = string.Empty;
         public bool ticketCheck = false;
+        public string selectedValue = string.Empty;
 
+        public List<Ticket> tickets { get; set; } = new List<Ticket>();
+
+        protected override async Task OnInitializedAsync()
+        {
+            FireBase firebase = new FireBase();
+            tickets = await firebase.GetAllTicket();
+        }
+
+        private void OnChangeEvent(ChangeEventArgs e)
+        {
+            selectedValue = e.Value.ToString();
+        }
 
         private void AddClient()
         {
@@ -80,12 +96,23 @@
 
             if (ticketCheck)
             {
+                Ticket t = new Ticket();
+                for(int i = 0; i < tickets.Count(); ++i)
+                {
+                    if(tickets[i].id == selectedValue)
+                    {
+                        t = tickets[i];
+                        break;
+                    }
+                }
+
                 ticket.clientId = client.id;
                 ticket.firstUsageDate = string.Empty;
-                //gymid
+                ticket.gymId = t.gymId;
                 ticket.numberOfPreviouslyAccess = 0;
                 ticket.purchaseDate = DateTime.Now.ToString("dd.MM.yyyy");
-                //ticketid
+                ticket.sellingPrice = t.price;
+                ticket.ticketId = selectedValue;
                 ticket.valid = 1;
             }
 

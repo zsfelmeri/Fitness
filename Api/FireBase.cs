@@ -209,10 +209,10 @@ namespace Fitness.Api
 
             if (isChecked)
             {
-                ClientTicketNeeded tck = new ClientTicketNeeded
+                ClientTicketNeeded ctn = new ClientTicketNeeded
                 {
                     barCode = ticket.barCode,
-                    clientId = c.id,
+                    clientId = ticket.clientId,
                     firstUsageDate = ticket.firstUsageDate,
                     gymId = ticket.gymId,
                     numberOfPreviouslyAccess = ticket.numberOfPreviouslyAccess,
@@ -222,7 +222,7 @@ namespace Fitness.Api
                     valid = ticket.valid
                 };
 
-                await client.PushTaskAsync("ClientTickets", tck);
+                await client.PushTaskAsync("ClientTickets", ctn);
             }
         }
 
