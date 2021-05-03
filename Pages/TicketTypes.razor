@@ -48,19 +48,11 @@
     }
 
 
-    private void CreateTicketClick()
-    {
-
-    }
-
-
     protected override async Task OnInitializedAsync()
     {
         firebase = new FireBase();
         isAdmin = await LocalStore.GetItemAsync<bool>("SessionAdmin");
         isUser = await LocalStore.GetItemAsync<bool>("SessionUser");
         await GetAllTickets();
-
-
     }
 }
