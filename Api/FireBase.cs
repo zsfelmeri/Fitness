@@ -100,6 +100,40 @@ namespace Fitness.Api
             return cls;
         }
 
+        public async Task<List<Gym>> GetAllGym()
+        {
+            FirebaseResponse response = await client.GetTaskAsync("Gyms");
+            Dictionary<string, GymNeeded> dict = new Dictionary<string, GymNeeded>();
+            dict = JsonConvert.DeserializeObject<Dictionary<string, GymNeeded>>(response.Body);
+
+            List<Gym> gyms = new List<Gym>();
+            if (dict != null && dict.Count != 0)
+            {
+                foreach (var c in dict)
+                {
+                    Gym cc = new Gym
+                    {
+                        id = c.Key,
+                        isDeleted = c.Value.isDeleted,
+                        name = c.Value.name
+                    };
+                    gyms.Add(cc);
+                }
+            }
+
+            return gyms;
+
+        }
+
+        public async Task<Gym> GymById(string id)
+        {
+            FirebaseResponse response = await client.GetTaskAsync($"Gyms/{id}");   
+            Gym c = JsonConvert.DeserializeObject<Gym>(response.Body);
+            c.id = id;
+
+            return c;
+        }
+
         public async Task<Client> GetClientById(string id)
         {
             FirebaseResponse response = await client.GetTaskAsync($"Clients/{id}");

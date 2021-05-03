@@ -13,7 +13,7 @@
     {
         <td>No</td>
     }
-    <td>@ticket.gymId</td>
+    <td>@gym.name</td>
     <td>@ticket.fromHour</td>
     <td>@ticket.toHour</td>
     <td>@ticket.usageForDay</td>
@@ -25,9 +25,17 @@
     [Parameter]
     public Ticket ticket { set; get; }
 
+    private Gym gym { get; set; } = new Gym();
+    private FireBase fireBase = new FireBase();
+
     private void DeleteTicket()
     {
-        FireBase firebase = new FireBase();
-        firebase.DeleteTicket(ticket.id);
+        fireBase.DeleteTicket(ticket.id);
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        gym = await fireBase.GymById(ticket.gymId);
     }
 }

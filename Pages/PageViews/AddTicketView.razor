@@ -21,8 +21,14 @@
     <label>Number of valid Entry: </label>
     <input type="text" @bind="@ticket.numberOfValidEntry" /><br />
 
-    <label>GymId: </label>
-    <input type="text" @bind="@ticket.gymId" /><br />
+    <label>Choose gym: </label>
+    <select  @onchange="editGymId">
+        @foreach(Gym gm in gyms)
+        {
+            <option value="@gm.id">@gm.name</option>
+        }
+
+    </select>
 
     <label>Usage for day: </label>
     <input type="text" @bind="@ticket.usageForDay" /><br />
@@ -41,13 +47,21 @@
     public Ticket ticket { get; set; } = new Ticket();
     bool isAdded = false;
 
+    public List<Gym> gyms { get; set; } = new List<Gym>();
+    private FireBase firebase { get; set; } = new FireBase();
 
     private void AddTicket()
     {
-        FireBase firebase = new FireBase();
-
         firebase.InsertTicket(ticket);
-
         isAdded = true;
+    }
+    private void editGymId(ChangeEventArgs args)
+    {
+        ticket.gymId = args.Value.ToString();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        gyms = await firebase.GetAllGym();
     }
 }

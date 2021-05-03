@@ -3,39 +3,45 @@
 
 @if (ticket != null)
 {
-    <div class="container">
-        <label>Denomination: </label>
-        <input type="text" @bind="@ticket.denomination" /><br />
+<div class="container">
+    <label>Denomination: </label>
+    <input type="text" @bind="@ticket.denomination" /><br />
 
-        <label>Price: </label>
-        <input type="text" @bind="@ticket.price" /><br />
+    <label>Price: </label>
+    <input type="text" @bind="@ticket.price" /><br />
 
-        <label>Valid from hour: </label>
-        <input type="text" @bind="@ticket.fromHour" /><br />
+    <label>Valid from hour: </label>
+    <input type="text" @bind="@ticket.fromHour" /><br />
 
-        <label>Valid to hour: </label>
-        <input type="text" @bind="@ticket.toHour" /><br />
+    <label>Valid to hour: </label>
+    <input type="text" @bind="@ticket.toHour" /><br />
 
-        <label>Number of valid days: </label>
-        <input type="text" @bind="@ticket.numberOfValidDays" /><br />
+    <label>Number of valid days: </label>
+    <input type="text" @bind="@ticket.numberOfValidDays" /><br />
 
-        <label>Number of valid Entry: </label>
-        <input type="text" @bind="@ticket.numberOfValidEntry" /><br />
+    <label>Number of valid Entry: </label>
+    <input type="text" @bind="@ticket.numberOfValidEntry" /><br />
 
-        <label>GymId: </label>
-        <input type="text" @bind="@ticket.gymId" /><br />
-
-        <label>Usage for day: </label>
-        <input type="text" @bind="@ticket.usageForDay" /><br />
-
-        <button class="btn btn-primary" @onclick="EditClient">Edit</button><br />
-
-        @if (isUpdated)
+    <label>Gym: </label>
+    <select @onchange="editGymId">
+        @foreach (Gym gm in gyms)
         {
-            <h4>Client has been updated.</h4>
-            isUpdated = false;
+            <option value="@gm.id">@gm.name</option>
         }
-    </div>
+
+    </select>
+
+    <label>Usage for day: </label>
+    <input type="text" @bind="@ticket.usageForDay" /><br />
+
+    <button class="btn btn-primary" @onclick="EditClient">Edit</button><br />
+
+    @if (isUpdated)
+    {
+        <h4>Client has been updated.</h4>
+        isUpdated = false;
+    }
+</div>
 }
 
 @code {
@@ -45,10 +51,18 @@
     Ticket ticket { get; set; }
     bool isUpdated = false;
 
+    public List<Gym> gyms { get; set; } = new List<Gym>();
+
     protected override async Task OnInitializedAsync()
     {
         firebase = new FireBase();
         ticket = await firebase.GetTicketById(ticketId);
+        gyms = await firebase.GetAllGym();
+    }
+
+    private void editGymId(ChangeEventArgs args)
+    {
+        ticket.gymId = args.Value.ToString();
     }
 
     private void EditClient()
