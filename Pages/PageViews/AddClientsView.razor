@@ -52,6 +52,19 @@
                     <option value="@t.id">@t.denomination</option>
                 }
             </select><br />
+
+            @for(int i = 0; i < tickets.Count(); ++i)
+            {
+                if(tickets[i].id == selectedValue)
+                {
+                    <label>From: @tickets[i].fromHour</label><br />
+                    <label>To: @tickets[i].toHour</label><br />
+                    <label>Valid Days: @tickets[i].numberOfValidDays</label><br />
+                    <label>Valid Entries: @tickets[i].numberOfValidEntry</label><br />
+                    <label>Usage / day: @tickets[i].usageForDay</label><br />
+                    <label>Price: @tickets[i].price</label><br />
+                }
+            }
         }
     }
 
