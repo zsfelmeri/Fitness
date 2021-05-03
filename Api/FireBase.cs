@@ -276,6 +276,34 @@ namespace Fitness.Api
             return obj;
         }
 
+        public async Task<User> LoginUser(string username, string password)
+        {
+            FirebaseResponse response = await client.GetTaskAsync("Users");
+            Dictionary<string, UserNeeded> dict = new Dictionary<string, UserNeeded>();
+            dict = JsonConvert.DeserializeObject<Dictionary<string, UserNeeded>>(response.Body);
+
+            User user = new User();
+            if (dict != null && dict.Count > 0) 
+            {
+                foreach(var u in dict)
+                {
+                    if(u.Value.username == username && u.Value.password == password)
+                    {
+                        user.id = u.Key;
+                        user.address = u.Value.address;
+                        user.name = u.Value.name;
+                        user.password = u.Value.password;
+                        user.username = u.Value.username;
+                        user.role = u.Value.role;
+                        user.phoneNumber = u.Value.phoneNumber;
+                        break;
+                    }
+                }
+            }
+
+            return user;
+        }
+
         public async Task<List<Employee>> SearchEmployee(string criteria)
         {
             FirebaseResponse response = await client.GetTaskAsync("Employees");

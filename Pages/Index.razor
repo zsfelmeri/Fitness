@@ -7,14 +7,25 @@
 }
 else
 {
-    <button @onclick="@ClickAdmin" class="btn btn-primary">Admin</button>
-    <button @onclick="@ClickUser" class="btn btn-primary">User</button>
+    <div class="container">
+        <label>Username: </label>
+        <input type="text" @bind="username" />
+
+        <label>Password: </label>
+        <input type="password" @bind="password" />
+
+        <button @onclick="@LoginClick" class="btn btn-primary">Login</button>
+    </div>
 }
 
 
 @code {
     public bool isAdmin { get; set; }
     public bool isUser { get; set; }
+    public User user { get; set; } = new User();
+
+    public string username { get; set; } = string.Empty;
+    public string password { get; set; } = string.Empty;
     public FireBase firebase { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -22,19 +33,25 @@ else
         firebase = new FireBase();
         isAdmin = await LocalStore.GetItemAsync<bool>("SessionAdmin");
         isUser = await LocalStore.GetItemAsync<bool>("SessionUser");
+        user = await LocalStore.GetItemAsync<User>("SessionUserClass");
     }
 
-    private void ClickAdmin()
+    private async void LoginClick()
     {
-        isAdmin = true;
-        isUser = false;
-        SaveSession();
-    }
-
-    private void ClickUser()
-    {
-        isUser = true;
-        isAdmin = false;
+        user = await firebase.LoginUser(username, password);
+        if(user != null)
+        {
+            if(user.role == 1)
+            {
+                isAdmin = false;
+                isUser = true;
+            }
+            else if(user.role == 0)
+            {
+                isAdmin = true;
+                isUser = false;
+            }
+        }
         SaveSession();
     }
 
@@ -48,6 +65,7 @@ else
     {
         isAdmin = false;
         isUser = false;
+        user = null;
         await LocalStore.ClearAsync();
     }
 }
