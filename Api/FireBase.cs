@@ -52,7 +52,7 @@ namespace Fitness.Api
                     Ticket ticket = new Ticket
                     {
                         id = elem.Key,
-                        deleted = elem.Value.deleted,
+                        isDeleted = elem.Value.isDeleted,
                         denomination = elem.Value.denomination,
                         fromHour = elem.Value.fromHour,
                         gymId = elem.Value.gymId,
@@ -179,7 +179,7 @@ namespace Fitness.Api
             {
                 denomination = ticket.denomination,
                 gymId= ticket.gymId,
-                deleted = ticket.deleted,
+                isDeleted = ticket.isDeleted,
                 fromHour = ticket.fromHour,
                 numberOfValidDays = ticket.numberOfValidDays,
                 numberOfValidEntry = ticket.numberOfValidEntry,
@@ -234,7 +234,7 @@ namespace Fitness.Api
             {
                 denomination = ticket.denomination,
                 gymId = ticket.gymId,
-                deleted = ticket.deleted,
+                isDeleted = ticket.isDeleted,
                 fromHour = ticket.fromHour,
                 numberOfValidDays = ticket.numberOfValidDays,
                 numberOfValidEntry = ticket.numberOfValidEntry,
@@ -249,12 +249,22 @@ namespace Fitness.Api
 
         public async void DeleteClient(string id)
         {
-            await client.DeleteTaskAsync($"Clients/{id}");
+            //await client.DeleteTaskAsync($"Clients/{id}");
+            Deleted_Class obj = new Deleted_Class
+            {
+                isDeleted = 1
+            };
+            await client.UpdateTaskAsync($"Clients/{id}", obj);
         }
 
         public async void DeleteTicket(string id)
         {
-            await client.DeleteTaskAsync($"SeasonTicketTypes/{id}");
+            //await client.DeleteTaskAsync($"SeasonTicketTypes/{id}");
+            Deleted_Class obj = new Deleted_Class
+            {
+                isDeleted = 1
+            };
+            await client.UpdateTaskAsync($"SeasonTicketTypes/{id}", obj);
         }
 
         public async Task<List<Client>> SearchClient(string criteria)
@@ -338,54 +348,6 @@ namespace Fitness.Api
         {
             string fileName = "ClientsExport.xlsx";
             await js.InvokeAsync<object>("JSInteropExt.saveAsFile", fileName, type, Convert.ToBase64String(data));
-
-            //Application xcelApp = new Application();
-            //xcelApp.Application.Workbooks.Add(Type.Missing);
-
-            ////header
-            //xcelApp.Cells[1, 1] = "Id";
-            //xcelApp.Cells[1, 2] = "Name";
-            //xcelApp.Cells[1, 3] = "Address";
-            //xcelApp.Cells[1, 4] = "Email";
-            //xcelApp.Cells[1, 5] = "Personal Identity";
-            //xcelApp.Cells[1, 6] = "Mobile";
-            //xcelApp.Cells[1, 7] = "Inserted Date";
-            //xcelApp.Cells[1, 8] = "Deleted";
-            //xcelApp.Cells[1, 9] = "Barcode";
-            //xcelApp.Cells[1, 10] = "Comments";
-
-            ////body
-            //for (int i = 0; i < data.Count(); ++i)
-            //{
-            //    xcelApp.Cells[i + 2, 1] = data[i].id;
-            //    xcelApp.Cells[i + 2, 2] = data[i].name;
-            //    xcelApp.Cells[i + 2, 3] = data[i].address;
-            //    xcelApp.Cells[i + 2, 4] = data[i].email;
-            //    xcelApp.Cells[i + 2, 5] = data[i].personalIdentity;
-            //    xcelApp.Cells[i + 2, 6] = data[i].telefon;
-            //    xcelApp.Cells[i + 2, 7] = data[i].insertedDate;
-            //    if (data[i].isDeleted == 0)
-            //    {
-            //        xcelApp.Cells[i + 2, 8] = "No";
-            //    }
-            //    else
-            //    {
-            //        xcelApp.Cells[i + 2, 8] = "Yes";
-            //    }
-            //    xcelApp.Cells[i + 2, 9] = data[i].barCode;
-            //    xcelApp.Cells[i + 2, 10] = data[i].comments;
-            //}
-
-            //xcelApp.Columns.AutoFit();
-            //xcelApp.ActiveWorkbook.SaveAs($"C:\\Users\\{Environment.UserName}\\Downloads\\ClientExport.xlsx");
-            //xcelApp.ActiveWorkbook.Saved = true;
-            //xcelApp.Quit();
-
-
-
-            //ExcelMapper mapper = new ExcelMapper();
-            //var newFile = $"C:\\Users\\{Environment.UserName}\\Downloads\\ClientExport.xlsx";
-            //mapper.Save(newFile, data, "Clients", true);
         }
     }
 }
