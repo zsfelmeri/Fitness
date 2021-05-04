@@ -15,7 +15,7 @@ namespace Fitness.Data
         public string gymId { get; set; }
         public int numberOfValidDays { get; set; }
         public int numberOfValidEntry { get; set; }
-        public int price { get; set; }
+        public double price { get; set; }
         public string toHour { get; set; }
         public int usageForDay { get; set; }
     }
@@ -28,7 +28,7 @@ namespace Fitness.Data
         public string gymId { get; set; }
         public int numberOfValidDays { get; set; }
         public int numberOfValidEntry { get; set; }
-        public int price { get; set; }
+        public double price { get; set; }
         public string toHour { get; set; }
         public int usageForDay { get; set; }
     }
