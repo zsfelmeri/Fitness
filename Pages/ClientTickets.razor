@@ -7,7 +7,36 @@
 {
     <div>
         <label>Name or Barcode: </label>
-        <input type="text" @bind="inputString" />
+        <input type="text" @bind="inputString" /><br />
+
+        @foreach (var item in new string[] { "All", "Valid", "Invalid" })
+        {
+            <label>@item</label>
+            <input type="radio" value="@item" @onchange="RadioSelection" checked=@(radioValue.Equals(item, StringComparison.OrdinalIgnoreCase)) /> <br />
+        }
+
+        @*<label>Ticket types: </label>
+        @if (tickets.Count() == 0)
+        {
+            <h3>There is no ticket yet.</h3> <br />
+        }
+        else
+        {
+            <select @onchange="OnChangeEvent">
+                <option value="All">All</option>
+                @foreach (var t in tickets)
+                {
+                    @if (t.isDeleted != 1)
+                    {
+                        <option value="@t.id">@t.denomination</option>
+                    }
+                }
+            </select><br />
+        }*@
+
+        @*<label>Remaining time: </label>
+        <input type="text" @bind="remainingTime" placeholder="Day" /><br />*@
+
         <button class="btn btn-primary" @onclick="SearchClientTicket">Search</button>
     </div>
 
@@ -45,8 +74,17 @@
     public bool isAdmin { set; get; }
     public bool isUser { set; get; }
     public string inputString { set; get; } = string.Empty;
+    public string radioValue { get; set; } = string.Empty;
+    public string selectedValue { get; set; } = string.Empty;
+    public string remainingTime { get; set; } = string.Empty;
 
+    public List<Ticket> tickets { get; set; } = new List<Ticket>();
     public List<ClientTicket> validClientTickets { get; set; } = new List<ClientTicket>();
+
+    private void OnChangeEvent(ChangeEventArgs e)
+    {
+        selectedValue = e.Value.ToString();
+    }
 
     private async void SearchClientTicket()
     {
@@ -67,18 +105,53 @@
             }
         }
 
-        foreach(var ct in clientTickets)
+        if (radioValue == "All")
         {
-            if(ids.Contains(ct.clientId) && ct.valid == 1)
+            if (selectedValue == "All")
             {
-                validClientTickets.Add(ct);
+                foreach (var ct in clientTickets)
+                {
+                    if (ids.Contains(ct.clientId))
+                    {
+                        validClientTickets.Add(ct);
+                    }
+                }
+            }
+        }
+        else if(radioValue == "Valid")
+        {
+            foreach (var ct in clientTickets)
+            {
+                if (ids.Contains(ct.clientId) && ct.valid == 1)
+                {
+                    validClientTickets.Add(ct);
+                }
+            }
+        }
+        else if(radioValue == "Invalid")
+        {
+            foreach (var ct in clientTickets)
+            {
+                if (ids.Contains(ct.clientId) && ct.valid == 0)
+                {
+                    validClientTickets.Add(ct);
+                }
             }
         }
     }
 
+    private void RadioSelection(ChangeEventArgs e)
+    {
+        radioValue = e.Value.ToString();
+    }
+
     protected override async Task OnInitializedAsync()
     {
+        FireBase firebase = new FireBase();
         isAdmin = await LocalStore.GetItemAsync<bool>("SessionAdmin");
         isUser = await LocalStore.GetItemAsync<bool>("SessionUser");
+        tickets = await firebase.GetAllTicket();
+        radioValue = "All";
+        selectedValue = "All";
     }
 }
