@@ -8,7 +8,7 @@
     <div>
         <label>Barcode: </label>
         <input type="text" @bind="inputString" />
-        <button class="btn btn-primary" @onclick="SearchClient">Search</button><br />
+        <button class="btn btn-primary" @onclick="searchClient">Search</button><br />
     </div>
 }
 
@@ -32,32 +32,35 @@
 
     <br />
 
-    @if (clientTickets?.Count() != 0)
+    @if (@clientTickets?.Count() != 0)
     {
         <div class="table-bordered">
             <table>
                 <tr>
-                    <th>Denomination</th>
-                    <th>Price</th>
-                    <th>Number Of Valid Days</th>
-                    <th>Number Of Valid Entry</th>
-                    <th>Deleted</th>
+                    <th>Ticket type</th>
+                    <th>First Usage</th>
                     <th>Gym</th>
-                    <th>From Hour </th>
-                    <th>To Hour</th>
-                    <th>Usage For Day</th>
+                    <th>Number of Previous entries</th>
+                    <th>Purchase Date</th>
+                    <th>Selling Pirce</th>
+                    <th>Valid </th>
                 </tr>
 
-                @foreach (Ticket ticket in tickets)
+                @foreach (ClientTicket clientTicket in clientTickets)
                 {
-                    <TicketViews ticket="@ticket" />
+                    if (clientTicket.valid == 1 && clientTicket.clientId == searchedClient.id)
+                    {
+                        <ClientTicketView clientTicket="@clientTicket" />
+                    }
                 }
             </table>
         </div>
     }
+    else
+    {
+        <label>No Tickets Yet!</label> 
+    }
 }
-
-
 
 
 
@@ -68,9 +71,9 @@
     public List<Client> clients { get; set; } = new List<Client>();
     public Client searchedClient { get; set; } = null;
     private FireBase fireBase { get; set; } = new FireBase();
-    public List<ClientTicket> clientTickets { get; set; } = new List<ClientTicket>
+    public List<ClientTicket> clientTickets { get; set; } = new List<ClientTicket>();
 
-    private void SearchClient()
+    private void searchClient()
     {
         searchedClient = new Client();
         foreach (Client client in clients)
@@ -82,6 +85,12 @@
             }
         }
 
+
+    }
+
+    private async void getClientTickets()
+    {
+        clientTickets = await fireBase.GetClientTickets();
     }
 
     protected override async Task OnInitializedAsync()
@@ -90,5 +99,6 @@
         isAdmin = await LocalStore.GetItemAsync<bool>("SessionAdmin");
         isUser = await LocalStore.GetItemAsync<bool>("SessionUser");
         clients = await fireBase.GetClients();
+        getClientTickets();
     }
 }
