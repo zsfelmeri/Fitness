@@ -16,7 +16,7 @@
         {
             if (validClientTickets.Count() > 0)
             {
-                <table>
+                <table class="table-bordered">
                     <tr>
                         <th>Ticket type</th>
                         <th>First Usage</th>
@@ -27,7 +27,7 @@
                         <th>Valid </th>
                     </tr>
                 
-                    foreach(var ct in validClientTickets)
+                    @foreach(var ct in validClientTickets)
                     {
                         <ClientTicketView clientTicket="@ct" />
                     }

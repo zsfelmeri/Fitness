@@ -241,20 +241,7 @@ namespace Fitness.Api
 
             if (isChecked)
             {
-                ClientTicketNeeded ctn = new ClientTicketNeeded
-                {
-                    barCode = ticket.barCode,
-                    clientId = ticket.clientId,
-                    firstUsageDate = ticket.firstUsageDate,
-                    gymId = ticket.gymId,
-                    numberOfPreviouslyAccess = ticket.numberOfPreviouslyAccess,
-                    purchaseDate = ticket.purchaseDate,
-                    sellingPrice = ticket.sellingPrice,
-                    ticketId = ticket.ticketId,
-                    valid = ticket.valid
-                };
-
-                await client.PushTaskAsync("ClientTickets", ctn);
+                InsertClientTicket(ticket);
             }
         }
 
@@ -275,6 +262,24 @@ namespace Fitness.Api
 
             await client.PushTaskAsync($"SeasonTicketTypes", ticketNeeded);
 
+        }
+
+        public async void InsertClientTicket(ClientTicket ticket)
+        {
+            ClientTicketNeeded ctn = new ClientTicketNeeded
+            {
+                barCode = ticket.barCode,
+                clientId = ticket.clientId,
+                firstUsageDate = ticket.firstUsageDate,
+                gymId = ticket.gymId,
+                numberOfPreviouslyAccess = ticket.numberOfPreviouslyAccess,
+                purchaseDate = ticket.purchaseDate,
+                sellingPrice = ticket.sellingPrice,
+                ticketId = ticket.ticketId,
+                valid = ticket.valid
+            };
+
+            await client.PushTaskAsync("ClientTickets", ctn);
         }
 
         public async void DeleteClient(string id)
