@@ -10,6 +10,35 @@
         <input type="text" @bind="inputString" />
         <button class="btn btn-primary" @onclick="SearchClientTicket">Search</button>
     </div>
+
+    <div>
+        @if(validClientTickets != null)
+        {
+            if (validClientTickets.Count() > 0)
+            {
+                <table>
+                    <tr>
+                        <th>Ticket type</th>
+                        <th>First Usage</th>
+                        <th>Gym</th>
+                        <th>Number of Previous entries</th>
+                        <th>Purchase Date</th>
+                        <th>Selling Pirce</th>
+                        <th>Valid </th>
+                    </tr>
+                
+                    foreach(var ct in validClientTickets)
+                    {
+                        <ClientTicketView clientTicket="@ct" />
+                    }
+                </table>
+            }
+            else
+            {
+                <h3>There is no ticket yet.</h3>
+            }
+        }
+    </div>
 }
 
 @code {
@@ -17,9 +46,34 @@
     public bool isUser { set; get; }
     public string inputString { set; get; } = string.Empty;
 
-    private void SearchClientTicket()
-    {
+    public List<ClientTicket> validClientTickets { get; set; } = new List<ClientTicket>();
 
+    private async void SearchClientTicket()
+    {
+        FireBase firebase = new FireBase();
+        List<ClientTicket> clientTickets = new List<ClientTicket>();
+        clientTickets = await firebase.GetClientTickets();
+
+        List<Client> clients = new List<Client>();
+        clients = await firebase.GetClients();
+
+        string[] ids = new string[clients.Count()];
+
+        foreach(var c in clients)
+        {
+            if(inputString.ToLower() == c.barCode.ToLower() || inputString.ToLower() == c.name.ToLower())
+            {
+                ids.Append(c.id);
+            }
+        }
+
+        foreach(var ct in clientTickets)
+        {
+            if(ids.Contains(ct.clientId) && ct.valid == 1)
+            {
+                validClientTickets.Add(ct);
+            }
+        }
     }
 
     protected override async Task OnInitializedAsync()
