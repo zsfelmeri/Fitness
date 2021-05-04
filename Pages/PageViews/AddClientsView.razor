@@ -86,9 +86,9 @@
         public ClientTicket ticket { get; set; } = new ClientTicket();
         bool isAdded = false;
 
-        public string comment = string.Empty;
-        public bool ticketCheck = false;
-        public string selectedValue = string.Empty;
+        public string comment { get; set; } = string.Empty;
+        public bool ticketCheck { get; set; } = false;
+        public string selectedValue { get; set; } = string.Empty;
 
         public List<Ticket> tickets { get; set; } = new List<Ticket>();
 
