@@ -8,23 +8,97 @@
     <div>
         <label>Barcode: </label>
         <input type="text" @bind="inputString" />
-        <button class="btn btn-primary" @onclick="SearchClient">Search</button>
+        <button class="btn btn-primary" @onclick="searchClient">Search</button><br />
     </div>
 }
+
+@if (searchedClient != null)
+{
+    <div>
+        <label>Name: @searchedClient.name </label>
+        <br />
+        <label>Address: @searchedClient.address </label>
+        <br />
+        <label>Email: @searchedClient.email </label>
+        <br />
+        <label>Mobile:  @searchedClient.telefon</label>
+        <br />
+        <label>Barcode: @searchedClient.barCode </label>
+        <br />
+        <label>Inserted Date: @searchedClient.insertedDate</label>
+        <br />
+        <label>Personal Identity: @searchedClient.personalIdentity </label>
+    </div>
+
+    <br />
+
+    @if (@clientTickets?.Count() != 0)
+    {
+        <div class="table-bordered">
+            <table>
+                <tr>
+                    <th>Ticket type</th>
+                    <th>First Usage</th>
+                    <th>Gym</th>
+                    <th>Number of Previous entries</th>
+                    <th>Purchase Date</th>
+                    <th>Selling Pirce</th>
+                    <th>Valid </th>
+                </tr>
+
+                @foreach (ClientTicket clientTicket in clientTickets)
+                {
+                    if (clientTicket.valid == 1 && clientTicket.clientId == searchedClient.id)
+                    {
+                        <ClientTicketView clientTicket="@clientTicket" />
+                    }
+                }
+            </table>
+        </div>
+    }
+    else
+    {
+        <label>No Tickets Yet!</label> 
+    }
+}
+
+
 
 @code {
     public bool isAdmin { set; get; }
     public bool isUser { set; get; }
     public string inputString { set; get; } = string.Empty;
+    public List<Client> clients { get; set; } = new List<Client>();
+    public Client searchedClient { get; set; } = null;
+    private FireBase fireBase { get; set; } = new FireBase();
+    public List<ClientTicket> clientTickets { get; set; } = new List<ClientTicket>();
 
-    private void SearchClient()
+    private void searchClient()
     {
+        searchedClient = new Client();
+        foreach (Client client in clients)
+        {
+            if (client.barCode == inputString)
+            {
+                searchedClient = client;
+                return;
+            }
+        }
 
+
+    }
+
+    private async void getClientTickets()
+    {
+        clientTickets = await fireBase.GetClientTickets();
     }
 
     protected override async Task OnInitializedAsync()
     {
+
         isAdmin = await LocalStore.GetItemAsync<bool>("SessionAdmin");
         isUser = await LocalStore.GetItemAsync<bool>("SessionUser");
+        clients = await fireBase.GetClients();
+        getClientTickets();
     }
 }

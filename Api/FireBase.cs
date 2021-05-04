@@ -282,6 +282,31 @@ namespace Fitness.Api
             await client.PushTaskAsync("ClientTickets", ctn);
         }
 
+        public async void updateClientTicketById(string clientTicketId, int numberOfDays)
+        {
+            ClientTicketNeeded clientTicket = new ClientTicketNeeded
+            {
+                numberOfPreviouslyAccess = numberOfDays
+            };
+
+            await client.UpdateTaskAsync($"ClientTickets/{clientTicketId}", clientTicket);
+        }
+
+        public async void updateClientTicketById(string clientTicketId)
+        {
+            await client.UpdateTaskAsync($"ClientTickets/{clientTicketId}/valid", 0);
+        }
+
+        public async void updateClientTicketById(string clientTicketId, DateTime firstUsage)
+        {
+            await client.UpdateTaskAsync($"ClientTickets/{clientTicketId}/firstUsageDate", firstUsage);
+        }
+
+        public async void AddNewEntry(EntryNeeded entry)
+        {
+            await client.PushTaskAsync("Entries", entry);
+        }
+
         public async void DeleteClient(string id)
         {
             //await client.DeleteTaskAsync($"Clients/{id}");
