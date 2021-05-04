@@ -9,7 +9,7 @@ namespace Fitness.Data
     public class Ticket
     {
         public string id { get; set; }
-        public int deleted { get; set; }
+        public int isDeleted { get; set; }
         public string denomination { get; set; }
         public string fromHour { get; set; }
         public string gymId { get; set; }
@@ -22,7 +22,7 @@ namespace Fitness.Data
 
     public class TicketNeeded
     {
-        public int deleted { get; set; }
+        public int isDeleted { get; set; }
         public string denomination { get; set; }
         public string fromHour { get; set; }
         public string gymId { get; set; }

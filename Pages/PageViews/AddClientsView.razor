@@ -49,7 +49,10 @@
             <select @onchange="OnChangeEvent">
                 @foreach (var t in tickets)
                 {
-                    <option value="@t.id">@t.denomination</option>
+                    @if (t.isDeleted != 1)
+                    {
+                        <option value="@t.id">@t.denomination</option>
+                    }
                 }
             </select><br />
 
@@ -93,6 +96,7 @@
         {
             FireBase firebase = new FireBase();
             tickets = await firebase.GetAllTicket();
+            selectedValue = tickets[0].id;
         }
 
         private void OnChangeEvent(ChangeEventArgs e)
