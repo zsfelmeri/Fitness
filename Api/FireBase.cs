@@ -154,6 +154,36 @@ namespace Fitness.Api
             return ticket;
         }
 
+        public async Task<List<ClientTicket>> GetClientTickets()
+        {
+            FirebaseResponse response = await client.GetTaskAsync("ClientTickets");
+            Dictionary<string, ClientTicketNeeded> dict = new Dictionary<string, ClientTicketNeeded>();
+            dict = JsonConvert.DeserializeObject<Dictionary<string, ClientTicketNeeded>>(response.Body);
+
+            List<ClientTicket> clientTickets = new List<ClientTicket>();
+            if(dict != null && dict.Count > 0)
+            {
+                foreach(var ct in dict)
+                {
+                    clientTickets.Add(new ClientTicket
+                    {
+                        id = ct.Key,
+                        barCode = ct.Value.barCode,
+                        clientId = ct.Value.clientId,
+                        firstUsageDate = ct.Value.firstUsageDate,
+                        gymId = ct.Value.gymId,
+                        numberOfPreviouslyAccess = ct.Value.numberOfPreviouslyAccess,
+                        purchaseDate = ct.Value.purchaseDate,
+                        sellingPrice = ct.Value.sellingPrice,
+                        ticketId = ct.Value.ticketId,
+                        valid = ct.Value.valid
+                    });
+                }
+            }
+            
+            return clientTickets;
+        }
+
         public async void UpdateClient(Client c)
         {
             ClientNeeded clientNeeded = new ClientNeeded
