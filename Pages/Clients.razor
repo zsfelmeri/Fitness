@@ -1,5 +1,9 @@
 ﻿@page "/clients"
 @inject Blazored.LocalStorage.ILocalStorageService LocalStore
+@inject IJSRuntime jsruntime
+@using NPOI.SS.UserModel
+@using NPOI.XSSF.UserModel
+@using System.IO
 
 <h3>Clients</h3>
 
@@ -25,12 +29,14 @@
         <div class="table-bordered">
             <table>
                 <tr>
+                    <th>Deleted</th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Address</th>
                     <th>Personal Identity</th>
                     <th>Mobile</th>
                     <th>Barcode</th>
+                    <th>Inserted Date</th>
                 </tr>
 
                 @foreach (Client client in clients)
@@ -38,6 +44,10 @@
                     <ClientsView client="@client" />
                 }
             </table>
+        </div>
+
+        <div>
+            <button class="btn btn-primary" @onclick="ExportData">Export</button>
         </div>
     }
 
@@ -68,6 +78,7 @@ else if (isUser)
                     <th>Personal Identity</th>
                     <th>Mobile</th>
                     <th>Barcode</th>
+                    <th>Inserted Date</th>
                 </tr>
 
                 @foreach (Client client in clients)
@@ -75,6 +86,10 @@ else if (isUser)
                     <ClientsView client="@client" />
                 }
             </table>
+        </div>
+
+        <div>
+            <button class="btn btn-primary" @onclick="ExportData">Export</button>
         </div>
     }
 
@@ -94,6 +109,7 @@ else if (isUser)
 
     public string SearchCriteria { get; set; } = string.Empty;
 
+
     private async Task GetAllClients()
     {
         clients = await firebase.GetClients();
@@ -107,6 +123,89 @@ else if (isUser)
     private async Task SearchEmployee()
     {
         employees = await firebase.SearchEmployee(SearchCriteria);
+    }
+
+    private async Task ExportData()
+    {
+        IWorkbook workbook = new XSSFWorkbook();
+
+        var dataFormat = workbook.CreateDataFormat();
+        var dataStyle = workbook.CreateCellStyle();
+        dataStyle.DataFormat = dataFormat.GetFormat("dd.MM.yyyy");
+
+        ISheet worksheet = workbook.CreateSheet("Clients");
+
+        int rowNumber = 0;
+        IRow row = worksheet.CreateRow(rowNumber++);
+
+        //header
+        ICell cell = row.CreateCell(0);
+        cell.SetCellValue("Id");
+        cell = row.CreateCell(1);
+        cell.SetCellValue("Name");
+        cell = row.CreateCell(2);
+        cell.SetCellValue("Address");
+        cell = row.CreateCell(3);
+        cell.SetCellValue("Email");
+        cell = row.CreateCell(4);
+        cell.SetCellValue("Personal Identity");
+        cell = row.CreateCell(5);
+        cell.SetCellValue("Mobile");
+        cell = row.CreateCell(6);
+        cell.SetCellValue("Inserted Date");
+        cell = row.CreateCell(7);
+        cell.SetCellValue("Deleted");
+        cell = row.CreateCell(8);
+        cell.SetCellValue("Barcode");
+        cell = row.CreateCell(9);
+        cell.SetCellValue("Comments");
+
+        //body
+        foreach(var client in clients)
+        {
+            row = worksheet.CreateRow(rowNumber++);
+
+            cell = row.CreateCell(0);
+            cell.SetCellValue(client.id);
+            cell = row.CreateCell(1);
+            cell.SetCellValue(client.name);
+            cell = row.CreateCell(2);
+            cell.SetCellValue(client.address);
+            cell = row.CreateCell(3);
+            cell.SetCellValue(client.email);
+            cell = row.CreateCell(4);
+            cell.SetCellValue(client.personalIdentity);
+            cell = row.CreateCell(5);
+            cell.SetCellValue(client.telefon);
+            cell = row.CreateCell(6);
+            cell.SetCellValue(client.insertedDate);
+            cell = row.CreateCell(7);
+            if (client.isDeleted == 0)
+            {
+                cell.SetCellValue("No");
+            }
+            else
+            {
+                cell.SetCellValue("Yes");
+            }
+            cell = row.CreateCell(8);
+            cell.SetCellValue(client.barCode);
+            cell = row.CreateCell(9);
+
+            string comments = string.Empty;
+            foreach(string s in client.comments)
+            {
+                comments += s + " | ";
+            }
+            cell.SetCellValue(comments);
+        }
+
+        MemoryStream ms = new MemoryStream();
+        workbook.Write(ms);
+        byte[] bytes = ms.ToArray();
+        ms.Close();
+
+        await firebase.ExportIntoExcel(jsruntime, bytes, "application/vnd.ms-excel");
     }
 
     protected override async Task OnInitializedAsync()
