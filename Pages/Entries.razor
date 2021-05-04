@@ -5,31 +5,62 @@
 
 @if (isAdmin || isUser)
 {
+<div>
+    <label>Barcode: </label>
+    <input type="text" @bind="inputString" />
+    <button class="btn btn-primary" @onclick="SearchClient">Search</button><br />
+</div> 
+}
+
+@if (searchedClient != null) { 
     <div>
-        <label>Name or Barcode: </label>
-        <input type="text" @bind="inputString" />
-        <button class="btn btn-primary" @onclick="SearchClient">Search</button>
+        <label>Name: @searchedClient.name </label>
+        <br />
+        <label>Address: @searchedClient.address </label>
+        <br />
+        <label>Email: @searchedClient.email </label>
+        <br />
+        <label>Mobile:  @searchedClient.telefon</label>
+        <br />
+        <label>Barcode: @searchedClient.barCode </label>
+        <br />
+        <label>Inserted Date: @searchedClient.insertedDate</label>
+        <br />
+        <label>Personal Identity: @searchedClient.personalIdentity </label>
     </div>
 }
+
+
+
+
 
 @code {
     public bool isAdmin { set; get; }
     public bool isUser { set; get; }
     public string inputString { set; get; } = string.Empty;
-    private List<Client> clients { get; set; } = new List<Client>();
-    private FireBase FireBase { get; set; } = new FireBase();
+    public List<Client> clients { get; set; } = new List<Client>();
+    public Client searchedClient { get; set; } = null;
+    private FireBase fireBase { get; set; } = new FireBase();
 
     private void SearchClient()
     {
+        searchedClient = new Client();
+        foreach (Client client in clients)
+        {
+            if (client.barCode == inputString)
+            {
+                searchedClient = client;
+                return;
+            }
+        }
 
     }
-
-
 
     protected override async Task OnInitializedAsync()
     {
 
         isAdmin = await LocalStore.GetItemAsync<bool>("SessionAdmin");
         isUser = await LocalStore.GetItemAsync<bool>("SessionUser");
+        clients = await fireBase.GetClients();
     }
 }
