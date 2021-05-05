@@ -9,4 +9,20 @@ namespace Fitness.Data
     {
         public int isDeleted { get; set; }
     }
+
+    public class Update_ClientTicket_Access
+    {
+        public int numberOfPreviouslyAccess { get; set; }
+    }
+
+    public class Update_ClientTicket_Valid
+    {
+        public int valid { get; set; }
+    }
+
+    public class Update_ClientTicket_FirstUsageDate
+    {
+        public string firstUsageDate { get; set; }
+    }
+
 }
