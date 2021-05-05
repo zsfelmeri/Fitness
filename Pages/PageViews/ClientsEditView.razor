@@ -76,8 +76,8 @@
         public string ClientId { get; set; }
         public FireBase firebase { get; set; }
         Client client { get; set; }
-        bool isUpdated = false;
-        public string selectedValue = string.Empty;
+        bool isUpdated { get; set; } = false;
+        public string selectedValue { get; set; } = string.Empty;
 
         public List<Ticket> tickets { get; set; } = new List<Ticket>();
 
@@ -119,6 +119,8 @@
             }
 
             firebase.InsertClientTicket(ct);
+
+            isUpdated = true;
         }
 
         private void OnChangeEvent(ChangeEventArgs e)
