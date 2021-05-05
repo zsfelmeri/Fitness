@@ -237,10 +237,13 @@ namespace Fitness.Api
                 telefon = c.telefon
             };
 
-            await client.PushTaskAsync("Clients", cn);
+            PushResponse response = await client.PushTaskAsync("Clients", cn);
 
             if (isChecked)
             {
+                Dictionary<string, string> dict = new Dictionary<string, string>();
+                dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(response.Body);
+                ticket.clientId = dict["name"];
                 InsertClientTicket(ticket);
             }
         }

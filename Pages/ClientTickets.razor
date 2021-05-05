@@ -19,42 +19,39 @@
     </div>
 
     <div>
-        @if(validClientTickets != null)
+        @if (validClientTickets != null && validClientTickets.Count() > 0)
         {
-                if (validClientTickets.Count() > 0)
-                {
-                    <table class="table-bordered">
-                        <tr>
-                            <th>First Usage</th>
-                            <th>Number of Previous entries</th>
-                            <th>Purchase Date</th>
-                            <th>Selling Pirce</th>
-                            <th>Valid </th>
-                        </tr>
+            <table class="table-bordered">
+                <tr>
+                    <th>First Usage</th>
+                    <th>Number of Previous entries</th>
+                    <th>Purchase Date</th>
+                    <th>Selling Pirce</th>
+                    <th>Valid </th>
+                </tr>
 
-                        @foreach (var ct in validClientTickets)
-                        {
-                            <tr>
-                                <td>@ct.firstUsageDate</td>
-                                <td>@ct.numberOfPreviouslyAccess</td>
-                                <td>@ct.purchaseDate</td>
-                                <td>@ct.sellingPrice</td>
-                                @if (ct.valid == 1)
-                                {
-                                    <td>Yes</td>
-                                }
-                                else
-                                {
-                                    <td>No</td>
-                                }
-                            </tr>
-                        }
-                    </table>
-                }
-                else
+                @foreach (var ct in validClientTickets)
                 {
-                    <h3>There is no ticket yet.</h3>
+                    <tr>
+                        <td>@ct.firstUsageDate</td>
+                        <td>@ct.numberOfPreviouslyAccess</td>
+                        <td>@ct.purchaseDate</td>
+                        <td>@ct.sellingPrice</td>
+                        @if (ct.valid == 1)
+                        {
+                            <td>Yes</td>
+                        }
+                        else
+                        {
+                            <td>No</td>
+                        }
+                    </tr>
                 }
+            </table>
+        }
+        else
+        {
+        <h3>There is no ticket yet.</h3>
         }
     </div>
 }
@@ -78,13 +75,13 @@
         List<Client> clients = new List<Client>();
         clients = await firebase.GetClients();
 
-        string[] ids = new string[clients.Count()];
+        List<string> ids = new List<string>();
 
         foreach(var c in clients)
         {
-            if(inputString.ToLower() == c.barCode.ToLower() || inputString.ToLower() == c.name.ToLower())
+            if(inputString == c.barCode || inputString.ToLower() == c.name.ToLower())
             {
-                ids.Append(c.id);
+                ids.Add(c.id);
             }
         }
 

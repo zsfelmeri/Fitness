@@ -83,7 +83,7 @@
 
     @code {
         public Client client { get; set; } = new Client();
-        public ClientTicket ticket { get; set; } = new ClientTicket();
+        public ClientTicket clientTicket { get; set; } = new ClientTicket();
         bool isAdded = false;
 
         public string comment { get; set; } = string.Empty;
@@ -123,17 +123,17 @@
                     }
                 }
 
-                ticket.clientId = client.id;
-                ticket.firstUsageDate = string.Empty;
-                ticket.gymId = t.gymId;
-                ticket.numberOfPreviouslyAccess = 0;
-                ticket.purchaseDate = DateTime.Now.ToString("dd.MM.yyyy");
-                ticket.sellingPrice = t.price;
-                ticket.ticketId = selectedValue;
-                ticket.valid = 1;
+                clientTicket.barCode = client.barCode;
+                clientTicket.firstUsageDate = string.Empty;
+                clientTicket.gymId = t.gymId;
+                clientTicket.numberOfPreviouslyAccess = 0;
+                clientTicket.purchaseDate = DateTime.Now.ToString("dd.MM.yyyy");
+                clientTicket.sellingPrice = t.price;
+                clientTicket.ticketId = selectedValue;
+                clientTicket.valid = 1;
             }
 
-            firebase.InsertClient(client, ticket, ticketCheck);
+            firebase.InsertClient(client, clientTicket, ticketCheck);
 
             isAdded = true;
         }
