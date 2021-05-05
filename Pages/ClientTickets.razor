@@ -43,29 +43,40 @@
     <div>
         @if(validClientTickets != null)
         {
-            if (validClientTickets.Count() > 0)
-            {
-                <table class="table-bordered">
-                    <tr>
-                        <th>Ticket type</th>
-                        <th>First Usage</th>
-                        <th>Gym</th>
-                        <th>Number of Previous entries</th>
-                        <th>Purchase Date</th>
-                        <th>Selling Pirce</th>
-                        <th>Valid </th>
-                    </tr>
-                
-                    @foreach(var ct in validClientTickets)
-                    {
-                        <ClientTicketView clientTicket="@ct" />
-                    }
-                </table>
-            }
-            else
-            {
-                <h3>There is no ticket yet.</h3>
-            }
+                if (validClientTickets.Count() > 0)
+                {
+                    <table class="table-bordered">
+                        <tr>
+                            <th>First Usage</th>
+                            <th>Number of Previous entries</th>
+                            <th>Purchase Date</th>
+                            <th>Selling Pirce</th>
+                            <th>Valid </th>
+                        </tr>
+
+                        @foreach (var ct in validClientTickets)
+                        {
+                            <tr>
+                                <td>@ct.firstUsageDate</td>
+                                <td>@ct.numberOfPreviouslyAccess</td>
+                                <td>@ct.purchaseDate</td>
+                                <td>@ct.sellingPrice</td>
+                                @if (ct.valid == 1)
+                                {
+                                    <td>Yes</td>
+                                }
+                                else
+                                {
+                                    <td>No</td>
+                                }
+                            </tr>
+                        }
+                    </table>
+                }
+                else
+                {
+                    <h3>There is no ticket yet.</h3>
+                }
         }
     </div>
 }
