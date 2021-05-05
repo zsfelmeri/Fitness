@@ -284,22 +284,30 @@ namespace Fitness.Api
 
         public async void updateClientTicketById(string clientTicketId, int numberOfDays)
         {
-            ClientTicketNeeded clientTicket = new ClientTicketNeeded
+
+            Update_ClientTicket_Access obj = new Update_ClientTicket_Access
             {
                 numberOfPreviouslyAccess = numberOfDays
             };
-
-            await client.UpdateTaskAsync($"ClientTickets/{clientTicketId}", clientTicket);
+            await client.UpdateTaskAsync($"ClientTickets/{clientTicketId}", obj);
         }
 
         public async void updateClientTicketById(string clientTicketId)
         {
-            await client.UpdateTaskAsync($"ClientTickets/{clientTicketId}/valid", 0);
+            Update_ClientTicket_Valid obj = new Update_ClientTicket_Valid
+            {
+                valid = 0
+            };
+            await client.UpdateTaskAsync($"ClientTickets/{clientTicketId}", obj);
         }
 
         public async void updateClientTicketById(string clientTicketId, DateTime firstUsage)
         {
-            await client.UpdateTaskAsync($"ClientTickets/{clientTicketId}/firstUsageDate", firstUsage);
+            Update_ClientTicket_FirstUsageDate obj = new Update_ClientTicket_FirstUsageDate
+            {
+                firstUsageDate = firstUsage.ToString("dd.MM.yyyy")
+            };
+            await client.UpdateTaskAsync($"ClientTickets/{clientTicketId}", obj);
         }
 
         public async void AddNewEntry(EntryNeeded entry)
