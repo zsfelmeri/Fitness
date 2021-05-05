@@ -1,0 +1,58 @@
+﻿@page "/tickettypes"
+@inject Blazored.LocalStorage.ILocalStorageService LocalStore
+
+<h3>TicketTypes</h3>
+
+@if (tickets?.Count() != 0)
+{
+    <div class="table-bordered">
+        <table>
+            <tr>
+                <th>Denomination</th>
+                <th>Price</th>
+                <th>Number Of Valid Days</th>
+                <th>Number Of Valid Entry</th>
+                <th>Deleted</th>
+                <th>Gym</th>
+                <th>From Hour </th>
+                <th>To Hour</th>
+                <th>Usage For Day</th>
+            </tr>
+
+            @foreach (Ticket ticket in tickets)
+            {
+                <TicketViews ticket="@ticket" />
+            }
+        </table>
+    </div>
+}
+
+
+@if (isAdmin)
+{
+    <div>
+        <a class="btn btn-primary" href="tickets/add">Add New Ticket</a>
+    </div>
+}
+
+@code {
+    public bool isAdmin { get; set; }
+    public bool isUser { get; set; }
+    public FireBase firebase { get; set; }
+
+    public List<Ticket> tickets { get; set; } = new List<Ticket>();
+
+    private async Task GetAllTickets()
+    {
+        tickets = await firebase.GetAllTicket();
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        firebase = new FireBase();
+        isAdmin = await LocalStore.GetItemAsync<bool>("SessionAdmin");
+        isUser = await LocalStore.GetItemAsync<bool>("SessionUser");
+        await GetAllTickets();
+    }
+}

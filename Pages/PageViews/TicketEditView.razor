@@ -1,0 +1,74 @@
+﻿
+@page "/tickets/{TicketId}"
+
+@if (ticket != null)
+{
+<div class="container">
+    <label>Denomination: </label>
+    <input type="text" @bind="@ticket.denomination" /><br />
+
+    <label>Price: </label>
+    <input type="text" @bind="@ticket.price" /><br />
+
+    <label>Valid from hour: </label>
+    <input type="text" @bind="@ticket.fromHour" /><br />
+
+    <label>Valid to hour: </label>
+    <input type="text" @bind="@ticket.toHour" /><br />
+
+    <label>Number of valid days: </label>
+    <input type="text" @bind="@ticket.numberOfValidDays" /><br />
+
+    <label>Number of valid Entry: </label>
+    <input type="text" @bind="@ticket.numberOfValidEntry" /><br />
+
+    <label>Gym: </label>
+    <select @onchange="editGymId">
+        @foreach (Gym gm in gyms)
+        {
+            <option value="@gm.id">@gm.name</option>
+        }
+
+    </select>
+
+    <label>Usage for day: </label>
+    <input type="text" @bind="@ticket.usageForDay" /><br />
+
+    <button class="btn btn-primary" @onclick="EditClient">Edit</button><br />
+
+    @if (isUpdated)
+    {
+        <h4>Ticket has been updated.</h4>
+        isUpdated = false;
+    }
+</div>
+}
+
+@code {
+    [Parameter]
+    public string ticketId { get; set; }
+    public FireBase firebase { get; set; }
+    Ticket ticket { get; set; }
+    bool isUpdated = false;
+
+    public List<Gym> gyms { get; set; } = new List<Gym>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        firebase = new FireBase();
+        ticket = await firebase.GetTicketById(ticketId);
+        gyms = await firebase.GetAllGym();
+    }
+
+    private void editGymId(ChangeEventArgs args)
+    {
+        ticket.gymId = args.Value.ToString();
+    }
+
+    private void EditClient()
+    {
+
+        firebase.UpdateTicket(ticket);
+        isUpdated = true;
+    }
+}

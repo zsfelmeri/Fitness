@@ -1,7 +1,71 @@
 ﻿@page "/"
+@inject Blazored.LocalStorage.ILocalStorageService LocalStore
 
-<h1>Hello, world!</h1>
+@if (isAdmin || isUser)
+{
+    <button @onclick="@ClearSession" class="btn btn-primary">Logout</button>
+}
+else
+{
+    <div class="container">
+        <label>Username: </label>
+        <input type="text" @bind="username" /><br />
 
-Welcome to your new app.
+        <label>Password: </label>
+        <input type="password" @bind="password" />
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+        <button @onclick="@LoginClick" class="btn btn-primary">Login</button>
+    </div>
+}
+
+
+@code {
+    public bool isAdmin { get; set; }
+    public bool isUser { get; set; }
+    public User user { get; set; } = new User();
+
+    public string username { get; set; } = string.Empty;
+    public string password { get; set; } = string.Empty;
+    public FireBase firebase { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        firebase = new FireBase();
+        isAdmin = await LocalStore.GetItemAsync<bool>("SessionAdmin");
+        isUser = await LocalStore.GetItemAsync<bool>("SessionUser");
+        user = await LocalStore.GetItemAsync<User>("SessionUserClass");
+    }
+
+    private async void LoginClick()
+    {
+        user = await firebase.LoginUser(username, password);
+        if(user != null)
+        {
+            if(user.role == 1)
+            {
+                isAdmin = false;
+                isUser = true;
+            }
+            else if(user.role == 0)
+            {
+                isAdmin = true;
+                isUser = false;
+            }
+        }
+        SaveSession();
+    }
+
+    public async void SaveSession()
+    {
+        await LocalStore.SetItemAsync("SessionAdmin", isAdmin);
+        await LocalStore.SetItemAsync("SessionUser", isUser);
+    }
+
+    public async void ClearSession()
+    {
+        isAdmin = false;
+        isUser = false;
+        user = null;
+        await LocalStore.ClearAsync();
+    }
+}

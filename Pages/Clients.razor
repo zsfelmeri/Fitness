@@ -1,0 +1,217 @@
+﻿@page "/clients"
+@inject Blazored.LocalStorage.ILocalStorageService LocalStore
+@inject IJSRuntime jsruntime
+@using NPOI.SS.UserModel
+@using NPOI.XSSF.UserModel
+@using System.IO
+
+<h3>Clients</h3>
+
+
+@if (isAdmin)
+{
+    <div>
+        <button @onclick="@GetAllClients" class="btn btn-primary">Get all clients</button>
+    </div>
+
+    <div>
+        <input type="text" @bind="SearchCriteria" placeholder="Name: ex. Tom" />
+        <button class="btn btn-primary" @onclick="SearchClient">Search</button>
+    </div>
+
+    <div>
+        <input type="text" @bind="SearchCriteria" placeholder="Name: ex. Tom" />
+        <button class="btn btn-primary" @onclick="SearchEmployee">Search</button>
+    </div>
+
+    if (clients?.Count() != 0)
+    {
+        <div class="table-bordered">
+            <table>
+                <tr>
+                    <th>Deleted</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                    <th>Personal Identity</th>
+                    <th>Mobile</th>
+                    <th>Barcode</th>
+                    <th>Inserted Date</th>
+                </tr>
+
+                @foreach (Client client in clients)
+                {
+                    <ClientsView client="@client" />
+                }
+            </table>
+        </div>
+
+        <div>
+            <button class="btn btn-primary" @onclick="ExportData">Export</button>
+        </div>
+    }
+
+    <div>
+        <a class="btn btn-primary" href="clients/add">Add Client</a>
+    </div>
+}
+else if (isUser)
+{
+    <div>
+        <button @onclick="@GetAllClients" class="btn btn-primary">Get all clients</button>
+    </div>
+
+    <div>
+        <input type="text" @bind="SearchCriteria" placeholder="Name: ex. Tom" />
+        <button class="btn btn-primary" @onclick="SearchClient">Search</button>
+    </div>
+
+    if (clients?.Count() != 0)
+    {
+        <div class="table-bordered">
+            <table>
+                <tr>
+                    <th>Deleted</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                    <th>Personal Identity</th>
+                    <th>Mobile</th>
+                    <th>Barcode</th>
+                    <th>Inserted Date</th>
+                </tr>
+
+                @foreach (Client client in clients)
+                {
+                    <ClientsView client="@client" />
+                }
+            </table>
+        </div>
+
+        <div>
+            <button class="btn btn-primary" @onclick="ExportData">Export</button>
+        </div>
+    }
+
+    <div>
+        <a class="btn btn-primary" href="clients/add">Add Client</a>
+    </div>
+}
+
+@code {
+    public bool isAdmin { set; get; }
+    public bool isUser { set; get; }
+
+    public FireBase firebase { get; set; }
+
+    public List<Client> clients { get; set; } = new List<Client>();
+    public List<Employee> employees { get; set; } = new List<Employee>();
+
+    public string SearchCriteria { get; set; } = string.Empty;
+
+
+    private async Task GetAllClients()
+    {
+        clients = await firebase.GetClients();
+    }
+
+    private async Task SearchClient()
+    {
+        clients = await firebase.SearchClient(SearchCriteria);
+    }
+
+    private async Task SearchEmployee()
+    {
+        employees = await firebase.SearchEmployee(SearchCriteria);
+    }
+
+    private async Task ExportData()
+    {
+        IWorkbook workbook = new XSSFWorkbook();
+
+        var dataFormat = workbook.CreateDataFormat();
+        var dataStyle = workbook.CreateCellStyle();
+        dataStyle.DataFormat = dataFormat.GetFormat("dd.MM.yyyy");
+
+        ISheet worksheet = workbook.CreateSheet("Clients");
+
+        int rowNumber = 0;
+        IRow row = worksheet.CreateRow(rowNumber++);
+
+        //header
+        ICell cell = row.CreateCell(0);
+        cell.SetCellValue("Id");
+        cell = row.CreateCell(1);
+        cell.SetCellValue("Name");
+        cell = row.CreateCell(2);
+        cell.SetCellValue("Address");
+        cell = row.CreateCell(3);
+        cell.SetCellValue("Email");
+        cell = row.CreateCell(4);
+        cell.SetCellValue("Personal Identity");
+        cell = row.CreateCell(5);
+        cell.SetCellValue("Mobile");
+        cell = row.CreateCell(6);
+        cell.SetCellValue("Inserted Date");
+        cell = row.CreateCell(7);
+        cell.SetCellValue("Deleted");
+        cell = row.CreateCell(8);
+        cell.SetCellValue("Barcode");
+        cell = row.CreateCell(9);
+        cell.SetCellValue("Comments");
+
+        //body
+        foreach(var client in clients)
+        {
+            row = worksheet.CreateRow(rowNumber++);
+
+            cell = row.CreateCell(0);
+            cell.SetCellValue(client.id);
+            cell = row.CreateCell(1);
+            cell.SetCellValue(client.name);
+            cell = row.CreateCell(2);
+            cell.SetCellValue(client.address);
+            cell = row.CreateCell(3);
+            cell.SetCellValue(client.email);
+            cell = row.CreateCell(4);
+            cell.SetCellValue(client.personalIdentity);
+            cell = row.CreateCell(5);
+            cell.SetCellValue(client.telefon);
+            cell = row.CreateCell(6);
+            cell.SetCellValue(client.insertedDate);
+            cell = row.CreateCell(7);
+            if (client.isDeleted == 0)
+            {
+                cell.SetCellValue("No");
+            }
+            else
+            {
+                cell.SetCellValue("Yes");
+            }
+            cell = row.CreateCell(8);
+            cell.SetCellValue(client.barCode);
+            cell = row.CreateCell(9);
+
+            string comments = string.Empty;
+            foreach(string s in client.comments)
+            {
+                comments += s + " | ";
+            }
+            cell.SetCellValue(comments);
+        }
+
+        MemoryStream ms = new MemoryStream();
+        workbook.Write(ms);
+        byte[] bytes = ms.ToArray();
+        ms.Close();
+
+        await firebase.ExportIntoExcel(jsruntime, bytes, "application/vnd.ms-excel");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        firebase = new FireBase();
+        isAdmin = await LocalStore.GetItemAsync<bool>("SessionAdmin");
+        isUser = await LocalStore.GetItemAsync<bool>("SessionUser");
+    }
+}

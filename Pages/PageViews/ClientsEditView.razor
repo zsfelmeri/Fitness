@@ -1,0 +1,130 @@
+﻿@page "/clients/{ClientId}"
+
+@if (client != null)
+{
+<div class="container">
+    <label>Name: </label>
+    <input type="text" @bind="@client.name" /><br />
+
+    <label>Address: </label>
+    <input type="text" @bind="@client.address" /><br />
+
+    <label>Email: </label>
+    <input type="text" @bind="@client.email" /><br />
+
+    <label>Mobile: </label>
+    <input type="text" @bind="@client.telefon" /><br />
+
+    <label>Barcode: </label>
+    <input type="text" @bind="@client.barCode" /><br />
+
+    <label>Inserted Date: </label>
+    <input type="text" @bind="@client.insertedDate" /><br />
+
+    <label>Personal Identity: </label>
+    <input type="text" @bind="@client.personalIdentity" /><br />
+
+    <label>Photo: </label>
+    <input type="text" @bind="@client.photo" /><br />
+
+    <button class="btn btn-primary" @onclick="EditClient">Edit</button><br /><br />
+
+    <h3>Add Ticket</h3>
+    <label>Ticket types: </label>
+    @if (tickets.Count() == 0)
+    {
+        <h3>There is no ticket yet.</h3> <br />
+    }
+    else
+    {
+        <select @onchange="OnChangeEvent">
+            @foreach (var t in tickets)
+            {
+                @if (t.isDeleted != 1)
+                {
+                    <option value="@t.id">@t.denomination</option>
+                }
+            }
+        </select><br />
+
+        @for (int i = 0; i < tickets.Count(); ++i)
+        {
+            if (tickets[i].id == selectedValue)
+            {
+                <label>From: @tickets[i].fromHour</label><br />
+                <label>To: @tickets[i].toHour</label><br />
+                <label>Valid Days: @tickets[i].numberOfValidDays</label><br />
+                <label>Valid Entries: @tickets[i].numberOfValidEntry</label><br />
+                <label>Usage / day: @tickets[i].usageForDay</label><br />
+                <label>Price: @tickets[i].price</label><br />
+            }
+        }
+    }
+
+    <button class="btn btn-primary" @onclick="AddClientTicket">Add Ticket</button><br />
+
+    @if (isUpdated)
+    {
+        <h4>Client has been updated.</h4>
+        isUpdated = false;
+    }
+</div>
+}
+
+    @code {
+        [Parameter]
+        public string ClientId { get; set; }
+        public FireBase firebase { get; set; }
+        Client client { get; set; }
+        bool isUpdated { get; set; } = false;
+        public string selectedValue { get; set; } = string.Empty;
+
+        public List<Ticket> tickets { get; set; } = new List<Ticket>();
+
+        protected override async Task OnInitializedAsync()
+        {
+            firebase = new FireBase();
+            client = await firebase.GetClientById(ClientId);
+            tickets = await firebase.GetAllTicket();
+            selectedValue = tickets[0].id;
+        }
+
+        private void EditClient()
+        {
+
+            firebase.UpdateClient(client);
+            isUpdated = true;
+        }
+
+        private void AddClientTicket()
+        {
+            ClientTicket ct = new ClientTicket();
+            ct.id = string.Empty;
+
+            for(int i = 0; i < tickets.Count(); ++i)
+            {
+                if(selectedValue == tickets[i].id)
+                {
+                    ct.barCode = client.barCode;
+                    ct.clientId = ClientId;
+                    ct.firstUsageDate = string.Empty;
+                    ct.gymId = tickets[i].gymId;
+                    ct.numberOfPreviouslyAccess = 0;
+                    ct.purchaseDate = DateTime.Now.ToString("dd.MM.yyyy");
+                    ct.sellingPrice = tickets[i].price;
+                    ct.ticketId = tickets[i].id;
+                    ct.valid = 1;
+                    break;
+                }
+            }
+
+            firebase.InsertClientTicket(ct);
+
+            isUpdated = true;
+        }
+
+        private void OnChangeEvent(ChangeEventArgs e)
+        {
+            selectedValue = e.Value.ToString();
+        }
+    }

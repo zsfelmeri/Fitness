@@ -1,0 +1,151 @@
+﻿@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService LocalStore
+
+<tr>
+    <td>@ticket.denomination</td>
+    <td>@clientTicket.firstUsageDate</td>
+    <td>@gym.name</td>
+    <td>@clientTicket.numberOfPreviouslyAccess</td>
+    <td>@clientTicket.purchaseDate</td>
+    <td>@clientTicket.sellingPrice</td>
+    @if (clientTicket.valid == 1)
+    {
+        <td>Yes</td>
+    }
+    else
+    {
+        <td>No</td>
+    }
+    <td><button @onclick="EntryNow" class="btn btn-primary">Belepes</button></td>
+    <br />
+    @if (!errorInvalidHour)
+    {
+        <label style="color:red"> Invalid Hour </label>
+        <br />
+    }
+
+    @if (!errorInvalidDays)
+    {
+        <label style="color:red"> No more day available: @ticket.numberOfValidDays/@clientTicket.numberOfPreviouslyAccess </label>
+        <br />
+    }
+    @if (!errorInvalidDate)
+    {
+        <label style="color:red"> The ticket is expired! </label>
+        <br />
+    }
+    @if (successEntry)
+    {
+        <label style="color:green"> Succes Entry! </label>
+        <br />
+    }
+
+
+
+</tr>
+
+@code {
+    [Parameter]
+    public ClientTicket clientTicket { set; get; }
+
+    private Gym gym { get; set; } = new Gym();
+    private Ticket ticket { get; set; } = new Ticket();
+    private FireBase fireBase = new FireBase();
+    private bool errorInvalidHour = true;
+    private bool errorInvalidDays = true;
+    private bool errorInvalidDate = true;
+    private bool successEntry = false;
+
+
+    private void EntryNow()
+    {
+        //megnezzuk hogy az adott intervallumban jott e
+        if (!HoursCheck())
+        {
+            errorInvalidHour = false;
+        }
+        else
+        {
+            if (clientTicket.numberOfPreviouslyAccess >= ticket.numberOfValidDays)
+            {
+                errorInvalidDays = false;
+                //invalidet the clientTicket
+                fireBase.updateClientTicketById(clientTicket.id);
+
+            }
+            else
+            {
+                if (!CheckValidDate())
+                {
+                    errorInvalidDate = false;
+                    fireBase.updateClientTicketById(clientTicket.id);
+                }
+                else
+                {
+                    string id;
+                
+                    successEntry = true;
+                    fireBase.updateClientTicketById(clientTicket.id, (clientTicket.numberOfPreviouslyAccess + 1));
+                    fireBase.AddNewEntry(new EntryNeeded
+                    {
+                        barCode = clientTicket.barCode,
+                        clientId = clientTicket.clientId,
+                        date = DateTime.Now.ToString("dd.MM.yyyy"),
+                        gymId = clientTicket.gymId,
+                        insertedbyUid = "userid",
+                        ticketId = ticket.id
+                    });
+                }
+
+            }
+        }
+
+
+
+    }
+
+    private bool CheckValidDate()
+    {
+        if (clientTicket.firstUsageDate.Length == 0)
+        {
+            fireBase.updateClientTicketById(clientTicket.id, DateTime.Now);
+            return true;
+        }
+        var firstUsageDate = DateTime.Parse(clientTicket.firstUsageDate);
+
+        var expiryDate = firstUsageDate.AddDays(ticket.numberOfValidDays);
+
+        if (DateTime.Now < expiryDate)
+        {
+            return true;
+        }
+
+
+        return false;
+    }
+
+
+    private bool HoursCheck()
+    {
+        string now = DateTime.Now.ToString("HH:mm");
+        int a = String.Compare(ticket.fromHour, now, StringComparison.Ordinal);
+        int b = String.Compare(now, ticket.toHour, StringComparison.Ordinal);
+        if (a <= 0 && b <= 0)
+        {
+            return true;
+        }
+        return false;
+
+    }
+
+    public User user { get; set; } = new User();
+    public User userAdmin { get; set; } = new User();
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await LocalStore.GetItemAsync<User>("SessionUserClass");
+        userAdmin = await LocalStore.GetItemAsync<User>("SessionAdminClass");
+        gym = await fireBase.GymById(clientTicket.gymId);
+        ticket = await fireBase.GetTicketById(clientTicket.ticketId);
+    }
+}

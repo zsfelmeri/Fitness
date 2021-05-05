@@ -1,0 +1,41 @@
+﻿@inject NavigationManager NavigationManager
+
+<tr>
+    <td>@ticket.denomination</td>
+    <td>@ticket.price</td>
+    <td>@ticket.numberOfValidDays</td>
+    <td>@ticket.numberOfValidEntry</td>
+    @if (ticket.isDeleted == 1)
+    {
+        <td>Yes</td>
+    }
+    else
+    {
+        <td>No</td>
+    }
+    <td>@gym.name</td>
+    <td>@ticket.fromHour</td>
+    <td>@ticket.toHour</td>
+    <td>@ticket.usageForDay</td>
+    <td><a class="btn btn-primary" href="tickets/@ticket.id">Edit</a></td>
+    <td><button @onclick="DeleteTicket" class="btn btn-primary">Delete</button></td>
+</tr>
+
+@code {
+    [Parameter]
+    public Ticket ticket { set; get; }
+
+    private Gym gym { get; set; } = new Gym();
+    private FireBase fireBase = new FireBase();
+
+    private void DeleteTicket()
+    {
+        fireBase.DeleteTicket(ticket.id);
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        gym = await fireBase.GymById(ticket.gymId);
+    }
+}
