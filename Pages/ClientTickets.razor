@@ -15,28 +15,6 @@
             <input type="radio" value="@item" @onchange="RadioSelection" checked=@(radioValue.Equals(item, StringComparison.OrdinalIgnoreCase)) /> <br />
         }
 
-        @*<label>Ticket types: </label>
-        @if (tickets.Count() == 0)
-        {
-            <h3>There is no ticket yet.</h3> <br />
-        }
-        else
-        {
-            <select @onchange="OnChangeEvent">
-                <option value="All">All</option>
-                @foreach (var t in tickets)
-                {
-                    @if (t.isDeleted != 1)
-                    {
-                        <option value="@t.id">@t.denomination</option>
-                    }
-                }
-            </select><br />
-        }*@
-
-        @*<label>Remaining time: </label>
-        <input type="text" @bind="remainingTime" placeholder="Day" /><br />*@
-
         <button class="btn btn-primary" @onclick="SearchClientTicket">Search</button>
     </div>
 
@@ -86,16 +64,10 @@
     public bool isUser { set; get; }
     public string inputString { set; get; } = string.Empty;
     public string radioValue { get; set; } = string.Empty;
-    public string selectedValue { get; set; } = string.Empty;
     public string remainingTime { get; set; } = string.Empty;
 
     public List<Ticket> tickets { get; set; } = new List<Ticket>();
     public List<ClientTicket> validClientTickets { get; set; } = new List<ClientTicket>();
-
-    private void OnChangeEvent(ChangeEventArgs e)
-    {
-        selectedValue = e.Value.ToString();
-    }
 
     private async void SearchClientTicket()
     {
@@ -118,14 +90,11 @@
 
         if (radioValue == "All")
         {
-            if (selectedValue == "All")
+            foreach (var ct in clientTickets)
             {
-                foreach (var ct in clientTickets)
+                if (ids.Contains(ct.clientId))
                 {
-                    if (ids.Contains(ct.clientId))
-                    {
-                        validClientTickets.Add(ct);
-                    }
+                    validClientTickets.Add(ct);
                 }
             }
         }
@@ -163,6 +132,5 @@
         isUser = await LocalStore.GetItemAsync<bool>("SessionUser");
         tickets = await firebase.GetAllTicket();
         radioValue = "All";
-        selectedValue = "All";
     }
 }
